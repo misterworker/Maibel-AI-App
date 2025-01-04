@@ -1,1 +1,1 @@
-Stream bot input -> Commit 13 in development branch ("Change Stream to Invoke")
+Stream bot input -> Commit 13 in development branch ("Changed Stream to Invoke")
