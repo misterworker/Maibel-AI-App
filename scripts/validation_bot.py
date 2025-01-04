@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import asyncio
@@ -41,7 +40,7 @@ class Logic(BaseModel):
                               "user struggles with healthy eating because of weed. Another example - Question: 'What can't you eat?' Response: "
                               "'None' Verdict: True. The response is valid since it simply answers the question, as the user does not have "
                               "food he can't eat.")
-    reason: str = Field(description = "Provide a reason as to why the answer is not valid to the question (if it isnt.)")
+    # reason: str = Field(description = "Provide a reason as to why the answer is not valid to the question (if it isnt.)") #! Remove in prod
     nudge: str = Field (description = "Provide encouragement to the user to answer properly. This field addresses the user directly. Only "
                                     "generate this if the logic rating is false. A good nudge would be something like "
                                     "'I like your playful tone! However, I do need a proper response for the question!'")

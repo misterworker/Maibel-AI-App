@@ -9,6 +9,11 @@ import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
 
+
+//* Onboarding Logic: If today is User's first day, launch bot messages using initiateOnboardingFlow.
+
+
+
 export default function Chat() {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
@@ -17,18 +22,17 @@ export default function Chat() {
   const [coachName, setCoachName] = useState("");
   const [personality, setPersonality] = useState("");
   const [gender, setGender] = useState("");
-  const [coachId, setCoachId] = useState(""); // Added coachId state
+  const [coachId, setCoachId] = useState("");
 
   const botAvatar = require("../../assets/images/Stan.jpeg");
 
-  // Use the custom hook with the actual coachId
-  const { messages, isStreaming, isChallenge, setIsChallenge, handleSend, handleSendImage } = useChat(
-    coachId, // Pass the dynamic coachId
+  const { messages, isStreaming, challenge, setChallenge, handleSend, handleSendImage } = useChat(
+    coachId,
     coachName, 
     botAvatar, 
-    personality, // Pass the personality value
-    gender, // Pass the gender value
-    coachBackground // Pass the coach's background description
+    personality,
+    gender,
+    coachBackground
   );
 
   useEffect(() => {
@@ -58,21 +62,20 @@ export default function Chat() {
           setCoachName("Coach");
       }
 
-      // Set the personality and gender values safely
-      setPersonality(Array.isArray(personalities) ? personalities.join(", ") : personalities || ""); // Ensure it's a string
-      setGender(gender || ""); // Fallback to an empty string if gender is null/undefined
-      setCoachId(coachId || ""); // Set the coachId in state
+      setPersonality(Array.isArray(personalities) ? personalities.join(", ") : personalities || "");
+      setGender(gender || "");
+      setCoachId(coachId || "");
       setCoachBackground(background);
 
       const onboardDay = await getOnboardDay();
       const today = new Date().toISOString().split("T")[0];
-      if (onboardDay !== today) {
-        setIsChallenge(true);
+      if (onboardDay === today) { //! set to [onboardDay === today]
+        setChallenge("onboard");
       }
     };
 
     setCoachDetails();
-  }, [setIsChallenge]);
+  }, [setChallenge]);
 
   const styles = StyleSheet.create({
     safeArea: {
@@ -121,7 +124,7 @@ export default function Chat() {
           <Header coachName={coachName} botAvatar={botAvatar} />
           <GiftedChat
             messages={messages}
-            onSend={(messages) => handleSend(messages, isChallenge)}
+            onSend={(messages) => handleSend(messages, challenge)}
             user={{ _id: 1, name: "User" }}
             placeholder="Type your message..."
             showUserAvatar={true}

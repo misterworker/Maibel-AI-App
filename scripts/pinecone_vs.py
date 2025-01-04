@@ -8,7 +8,7 @@ load_dotenv()
 
 # Constants for configuration
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-INDEX_NAME = "langchain-test-index"
+INDEX_NAME = "maibelai"
 MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
 
 class VectorStoreManager:

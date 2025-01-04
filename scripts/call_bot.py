@@ -17,7 +17,6 @@ load_dotenv()
 
 # Constants and configuration
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
 app = FastAPI()
@@ -32,38 +31,11 @@ app.add_middleware(
 # Setup workflow for LangChain
 workflow = StateGraph(state_schema=MessagesState)
 
-qwen_llm = HuggingFaceEndpoint(
-    repo_id="Qwen/Qwen2.5-Coder-32B",
-    task="text-generation",
-    max_new_tokens=1024,
-    do_sample=False,
-    repetition_penalty=1.03,
-    streaming=True,
-)
-nemo_llm = HuggingFaceEndpoint(
-    repo_id="nvidia/Llama-3.1-Nemotron-70B-Instruct-HF", # Need PRO subscription
-    task="text-generation",
-    max_new_tokens=1024,
-    do_sample=False,
-    repetition_penalty=1.03,
-    streaming=True,
-)
-zephyr_llm = HuggingFaceEndpoint(
-    repo_id="HuggingFaceH4/zephyr-7b-beta",
-    task="text-generation",
-    max_new_tokens=1024,
-    do_sample=False,
-    repetition_penalty=1.03,
-    streaming=True,
-)
-qwen_hf_llm = ChatHuggingFace(llm=qwen_llm, disable_streaming=False)
-nemo_hf_llm = ChatHuggingFace(llm=nemo_llm, disable_streaming=False)
-zephyr_hf_llm = ChatHuggingFace(llm=zephyr_llm, disable_streaming=False)
 nemo_nvidia_llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct", api_key=NVIDIA_API_KEY)
 pinecone_vs = VectorStoreManager()
 
 async def call_model(state: MessagesState, config):
-    # print("State: ", state)
+    print("State: ", state)
 
     trimmed_state = trim_messages(state['messages'], strategy="last", token_counter=len, 
                                   max_tokens=21, start_on="human", end_on=("human"), include_system=False) # Gets context of last 21 messages
@@ -104,7 +76,6 @@ workflow.add_edge(START, "model")
 memory = MemorySaver()
 langchainApp = workflow.compile(checkpointer=memory)
 
-
 @app.post("/chat")
 async def chat_endpoint(request: Request):
     """
@@ -130,23 +101,26 @@ async def chat_endpoint(request: Request):
         return JSONResponse(content={"error": "No userid passed"}, status_code=400)
 
     try:
-        # Stream the model response back to the client
-        async def message_stream():
-            config = {"configurable": {"thread_id": personalityId, "user_id": userid, "personalityId": personalityId,
-                                       "personalities": personalities, "gender": gender, "background": background}}
-            
-            messages = {"messages": [HumanMessage(content=user_input)]}
-            
-            try:
-                async for msg, metadata in langchainApp.astream(messages, config=config, stream_mode="messages"):
-                    yield msg.content
-                
-            except Exception as e:
-                yield f"Error: {str(e)}"
+        config = {
+            "configurable": {
+                "thread_id": personalityId,
+                "user_id": userid,
+                "personalityId": personalityId,
+                "personalities": personalities,
+                "gender": gender,
+                "background": background
+            }
+        }
 
-        return StreamingResponse(message_stream(), media_type="text/plain")
+        messages = {"messages": [HumanMessage(content=user_input)]}
+        
+        response = await langchainApp.ainvoke(messages, config=config)
+
+        ai_message = next((msg.content for msg in reversed(response['messages']) if isinstance(msg, AIMessage)), None)
+
+            
+        return JSONResponse(content={"response": ai_message}, status_code=200)
 
     except Exception as e:
         # Handle any errors and return an appropriate error response
         return JSONResponse(content={"error": f"Internal server error: {str(e)}"}, status_code=500)
-

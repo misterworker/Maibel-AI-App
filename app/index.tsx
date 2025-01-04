@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Modal } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Modal, ActivityIndicator  } from "react-native";
 import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +7,7 @@ import { getFromSecureStorage } from '../utils/SecureStorage';
 
 export default function Onboarding() {
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -15,15 +16,26 @@ export default function Onboarding() {
         const onboardDay = await getFromSecureStorage("onboardDay");
         if (onboardDay) {
           router.push("/(tabs)/chat");
+        } else {
+          setIsChecking(false);
         }
       } catch (error) {
         console.error("Error checking secure storage:", error);
+        setIsChecking(false);
       }
     };
 
     checkDayAndRedirect();
   }, [router]);
-  
+
+  if (isChecking) {
+    // Render a loading indicator or blank screen while checking
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#6A0DAD" />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -98,6 +110,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 28,
