@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { initiateOnboardingFlow } from "./useOnboardingFlow";
 
 export const useChat = (
+  userId: string,
   coachId: string,
   coachName: string,
   botAvatar: any,
@@ -31,37 +32,48 @@ export const useChat = (
         if (challenge == "none") {
           setIsStreaming(true);
 
-          botResponse(userMessage.text, 123, coachId, personality, gender, coachBackgroundDesc)
-          .then((botMessage) => {
-            setMessages((prevMessages) => [
-              {
-                _id: new Date().getTime(),
-                text: botMessage.text,
-                createdAt: new Date(),
-                user: {
-                  _id: 2,
-                  name: coachName,
-                  avatar: botAvatar,
+          botResponse(userMessage.text, userId, coachId, personality, gender, coachBackgroundDesc, (chunk) => {
+            setMessages((prevMessages) => {
+              const lastMessage = prevMessages[0];
+              if (lastMessage && lastMessage.user._id === 2 && lastMessage.text.startsWith("...")) {
+                const updatedMessage = {
+                  ...lastMessage,
+                  text: lastMessage.text + chunk,
+                };
+                return [updatedMessage, ...prevMessages.slice(1)];
+              } else {
+                return [
+                  {
+                    _id: new Date().getTime(),
+                    text: "..." + chunk,
+                    createdAt: new Date(),
+                    user: {
+                      _id: 2,
+                      name: coachName,
+                      avatar: botAvatar,
+                    },
+                  },
+                  ...prevMessages,
+                ];
+              }
+            });
+          }).then((botMessage) => {
+            setMessages((previousMessages) => {
+              const updatedMessages = [
+                {
+                  _id: new Date().getTime(),
+                  text: botMessage.text,
+                  createdAt: new Date(),
+                  user: {
+                    _id: 2,
+                    name: coachName,
+                    avatar: botAvatar,
+                  },
                 },
-              },
-              ...prevMessages,
-            ]);
-            setIsStreaming(false);
-          })
-          .catch((error) => {
-            setMessages((prevMessages) => [
-              {
-                _id: new Date().getTime(),
-                text: `Error: ${error.message}`,
-                createdAt: new Date(),
-                user: {
-                  _id: 2,
-                  name: coachName,
-                  avatar: botAvatar,
-                },
-              },
-              ...prevMessages,
-            ]);
+                ...previousMessages.slice(1),
+              ];
+              return updatedMessages;
+            });
             setIsStreaming(false);
           });
         } else if (challenge == "onboard") {
@@ -81,7 +93,7 @@ export const useChat = (
         }
       }
     },
-    [coachId, coachName, botAvatar, personality, gender, coachBackgroundDesc]
+    [userId, coachId, coachName, botAvatar, personality, gender, coachBackgroundDesc]
   );
 
   const waitForReady = () => {

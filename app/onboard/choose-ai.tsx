@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { saveToSecureStorage } from "../../utils/SecureStorage";
 import CarouselComponent from "../../components/CarouselPageSwipe";
+import { v4 as uuidv4 } from 'uuid';
 
 
 const ChooseAI = () => {
@@ -10,6 +11,9 @@ const ChooseAI = () => {
 
   const handleCoachSelection = async (coachId: string, selectedGender: string, name: string, 
     background: string, personalities: string[]) => {
+    const userID = uuidv4();
+    console.log("User ID: ", userID);
+    await saveToSecureStorage("userID", userID);
     await saveToSecureStorage("coachId", coachId);
     await saveToSecureStorage("onboardDay", new Date().toISOString().split("T")[0]);
     await saveToSecureStorage("gender", selectedGender || "");

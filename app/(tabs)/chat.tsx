@@ -4,7 +4,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { themeStyles } from "../../context/themeStyles";
 import { View, StyleSheet, Text, ImageBackground, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getCoach, getOnboardDay } from '../../hooks/getFromStorage';
+import { getCoach, getOnboardDay, getUserID } from '../../hooks/getFromStorage';
 import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
@@ -23,10 +23,12 @@ export default function Chat() {
   const [personality, setPersonality] = useState("");
   const [gender, setGender] = useState("");
   const [coachId, setCoachId] = useState("");
+  const [userID, setUserId] = useState("");
 
   const botAvatar = require("../../assets/images/Stan.jpeg");
 
   const { messages, isStreaming, challenge, setChallenge, handleSend, handleSendImage } = useChat(
+    userID,
     coachId,
     coachName, 
     botAvatar, 
@@ -42,6 +44,9 @@ export default function Chat() {
       const name = coachDetails.name;
       const personalities = coachDetails.personalities;
       const gender = coachDetails.gender;
+
+      const userID = await getUserID() || "123"; 
+      console.log(userID)
 
       let background;
       switch (coachId) {
@@ -65,6 +70,7 @@ export default function Chat() {
       setPersonality(Array.isArray(personalities) ? personalities.join(", ") : personalities || "");
       setGender(gender || "");
       setCoachId(coachId || "");
+      setUserId(userID || "");
       setCoachBackground(background);
 
       const onboardDay = await getOnboardDay();

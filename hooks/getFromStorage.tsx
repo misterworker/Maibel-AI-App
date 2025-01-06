@@ -21,3 +21,8 @@ export const getOnboardDay = async() => {
   const onboardDay = await getFromSecureStorage("onboardDay")
   return (onboardDay)
 };
+
+export const getUserID = async() => {
+  const userID = await getFromSecureStorage("userID")
+  return (userID)
+}

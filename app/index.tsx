@@ -14,7 +14,8 @@ export default function Onboarding() {
     const checkDayAndRedirect = async () => {
       try {
         const onboardDay = await getFromSecureStorage("onboardDay");
-        if (onboardDay) {
+        const userID = await getFromSecureStorage("userID")
+        if (onboardDay && userID) {
           router.push("/(tabs)/chat");
         } else {
           setIsChecking(false);
