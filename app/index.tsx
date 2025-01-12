@@ -1,9 +1,11 @@
 import { useRouter } from "expo-router";
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Modal, ActivityIndicator  } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Modal, ActivityIndicator, BackHandler, Platform, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from 'expo-status-bar';
 import { getFromSecureStorage } from '../utils/SecureStorage';
+import { initializeBackgroundTask } from '../utils/backgroundTask';
+import * as Notifications from 'expo-notifications';
 
 export default function Onboarding() {
   const router = useRouter();
@@ -11,10 +13,37 @@ export default function Onboarding() {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      initializeBackgroundTask();
+
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+        }),
+      });
+
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('daily-check-in', {
+          name: 'Daily Check-In',
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: 'default',
+        });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     const checkDayAndRedirect = async () => {
       try {
         const onboardDay = await getFromSecureStorage("onboardDay");
-        const userID = await getFromSecureStorage("userID")
+        const userID = await getFromSecureStorage("userID");
         if (onboardDay && userID) {
           router.push("/(tabs)/chat");
         } else {
@@ -30,13 +59,14 @@ export default function Onboarding() {
   }, [router]);
 
   if (isChecking) {
-    // Render a loading indicator or blank screen while checking
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6A0DAD" />
       </View>
     );
   }
+
+  const screenHeight = Dimensions.get('window').height;
 
   return (
     <>
@@ -49,7 +79,7 @@ export default function Onboarding() {
       >
         <Text style={styles.title}>Welcome to Maibel.ai!</Text>
 
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, { top: screenHeight * 0.8 }]}>
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push("./onboard/initOnboard_1_day1")}
@@ -61,7 +91,9 @@ export default function Onboarding() {
               <Text style={styles.buttonText}>Start the Journey</Text>
             </LinearGradient>
           </TouchableOpacity>
+        </View>
 
+        <View style={[styles.buttonContainer, { top: screenHeight * 0.9 }]}>
           <TouchableOpacity
             style={styles.button}
             onPress={() => setModalVisible(true)}
@@ -130,7 +162,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    bottom: 50,
     alignItems: "center",
   },
   button: {

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, BackHandler } from "react-native";
+import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, } from "react-native";
 import { initOnboardStoryData } from "./onboard_data";
 import { useTheme } from '../../context/ThemeContext';
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,6 +12,7 @@ export default function onboardStoryPage() {
 
   let story;
 
+  console.log(story)
   if ((slug as string).startsWith("initOnboard")) {
     story = initOnboardStoryData[slug as keyof typeof initOnboardStoryData];
   }
@@ -23,11 +24,6 @@ export default function onboardStoryPage() {
       </View>
     );
   }
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
-    return () => backHandler.remove()
-  }, [])
 
   return (
     <ImageBackground source={story.image} style={styles().backgroundImage} resizeMode="cover">

@@ -20,6 +20,15 @@ export const getFromSecureStorage = async (key: string) => {
   }
 };
 
+export const toggleChallengeCompleted = async (isCompleted:boolean) => {
+  if (isCompleted){
+    await saveToSecureStorage("isCompleted", "true");
+  }
+  else {
+    await saveToSecureStorage("isCompleted", "false");
+  }
+};
+
 // Remove data securely (e.g., during sign-out)
 export const removeFromSecureStorage = async (key: string) => {
   try {

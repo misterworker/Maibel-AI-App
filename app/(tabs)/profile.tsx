@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../context/ThemeContext';
 import { themeStyles } from '../../context/themeStyles';
+import Confetti from '../../components/Confetti';
+import { useRoute } from '@react-navigation/native';
 
 interface Challenge {
   id: string;
@@ -11,42 +13,30 @@ interface Challenge {
   level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Athlete';
 }
 
-const challenges: Challenge[] = [
-  { id: '1', title: '10K Steps Daily', progress: 0.7, level: 'Intermediate' },
-  { id: '2', title: '30-Day Yoga', progress: 0.5, level: 'Beginner' },
-  { id: '3', title: 'Marathon Training', progress: 0.85, level: 'Athlete' },
-];
+const challenge: Challenge = {
+  id: '1',
+  title: '10K Steps Daily',
+  progress: 0.7,
+  level: 'Intermediate',
+};
 
-const ChallengesPage: React.FC = () => {
+const ProfilePage: React.FC = () => {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
-
-  const renderChallenge = ({ item }: { item: Challenge }) => (
-    <View style={[styles.challengeCard, { backgroundColor: currentTheme.cardBackground }]}>
-      <Text style={[styles.challengeTitle, { color: currentTheme.text }]}>{item.title}</Text>
-      <Text style={[styles.level, { color: currentTheme.subtext }]}>Level: {item.level}</Text>
-      <ProgressBar progress={item.progress} color={currentTheme.primary} style={styles.progressBar} />
-      <Text style={[styles.progressText, { color: currentTheme.subtext }]}>{Math.round(item.progress * 100)}% Completed</Text>
-    </View>
-  );
+  const route = useRoute();
+  const { isCompleted } = route.params as any || false;
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme.background }]}>
-      <Text style={[styles.pageTitle, { color: currentTheme.text }]}>Your Current Challenges</Text>
+      <Text style={[styles.pageTitle, { color: currentTheme.text }]}>Your Current Challenge</Text>
 
-      <FlatList
-        data={challenges}
-        renderItem={renderChallenge}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        scrollEnabled={false} // Let the ScrollView handle scrolling
-      />
+      {isCompleted && <Confetti />}
 
-      <View style={styles.chartsContainer}>
-        <Text style={[styles.chartsTitle, { color: currentTheme.text }]}>Your Progress Charts</Text>
-        <View style={[styles.chartPlaceholder, { backgroundColor: currentTheme.placeholder }]}>
-          <Text style={[styles.chartPlaceholderText, { color: currentTheme.subtext }]}>[Charts will be here]</Text>
-        </View>
+      <View style={[styles.challengeCard, { backgroundColor: currentTheme.cardBackground }]}>
+        <Text style={[styles.challengeTitle, { color: currentTheme.text }]}>{challenge.title}</Text>
+        <Text style={[styles.level, { color: currentTheme.subtext }]}>Level: {challenge.level}</Text>
+        <ProgressBar progress={challenge.progress} color={currentTheme.primary} style={styles.progressBar} />
+        <Text style={[styles.progressText, { color: currentTheme.subtext }]}>{Math.round(challenge.progress * 100)}% Completed</Text>
       </View>
     </ScrollView>
   );
@@ -61,9 +51,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-  },
-  listContainer: {
-    paddingBottom: 20,
   },
   challengeCard: {
     borderRadius: 8,
@@ -92,23 +79,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
   },
-  chartsContainer: {
-    marginTop: 30,
-  },
-  chartsTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  chartPlaceholder: {
-    height: Dimensions.get('window').width * 0.5,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chartPlaceholderText: {
-    fontSize: 14,
-  },
 });
 
-export default ChallengesPage;
+export default ProfilePage;

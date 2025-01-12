@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Maibel.ai",
-    "slug": "maibel-ai",
+    "slug": "Maibel.ai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,8 +15,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.anonymous.Maibel.ai"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -38,15 +37,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "ada6a413-d6fd-448b-9fb7-294c112120ae"
-      }
-    },
-    "owner": "ethanworker"
+    }
   }
 }

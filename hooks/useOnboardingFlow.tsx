@@ -1,5 +1,5 @@
 import { IMessage } from 'react-native-gifted-chat';
-import { dialogueFlow } from '../app/onboard/challenges';
+import { dialogueFlow } from '../app/onboard/onboard_data';
 
 export const initiateOnboardingFlow = async (coachName: string, 
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>, 
@@ -34,6 +34,9 @@ export const initiateOnboardingFlow = async (coachName: string,
       setTypingState(false)
       await onReplyCallback(messageText);
       setTypingState(true)
+    }
+    else if (step.next === "finish") {
+      setTypingState(false)
     }
   }
   setTypingState(false);

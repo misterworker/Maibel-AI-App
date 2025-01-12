@@ -1,13 +1,13 @@
 import { fetch } from 'expo/fetch';
-import Constants from 'expo-constants';
 
-const callbot_url = process.env.EXPO_PUBLIC_CALLBOT_URL || "http://127.0.0.1:8000/chat";
+const callbot_url = process.env.EXPO_PUBLIC_CALLBOT_URL || ""
+const validationbot_url = process.env.EXPO_PUBLIC_VALIDATIONBOT_URL || ""
 
 export const botResponse = async (userMessage: string, userId: string, personalityId: string, personality: string[],
   gender: string, background: string,
   onStreamUpdate?: (chunk: string) => void, ) => {
   try {
-    const response = await fetch( callbot_url, { //http://127.0.0.1:8000/chat for local
+    const response = await fetch( "http://localhost:8000/chat", { //http://localhost:8000/chat for local
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,6 @@ export const botResponse = async (userMessage: string, userId: string, personali
 
       // Decode and append the streamed chunk
       const chunk = decoder.decode(value, { stream: true });
-      console.log("Chunk: ", chunk)
       accumulatedText += chunk;
 
       // Notify updates to the caller via callback
@@ -82,7 +81,7 @@ export const validateResponse = async (
   reply: string,
 ) => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/validate_response', {
+    const response = await fetch(validationbot_url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,24 +98,25 @@ export const validateResponse = async (
     }
 
     const responseData = await response.json();
+    console.log("ResponseData: ", responseData)
 
     // Assuming response has fields logic_rating, nudge, and manipulative
     return {
-      isValid: responseData.isValid,
+      isNonsense: responseData.isNonsense,
       nudge: responseData.nudge,
       manipulative: responseData.manipulative,
     };
   } catch (error) {
     if (error instanceof Error) {
       return {
-        isValid: null,
+        isNonsense: null,
         nudge: null,
         manipulative: null,
         error: `Error: ${error.message}`,
       };
     } else {
       return {
-        isValid: null,
+        isNonsense: null,
         nudge: null,
         manipulative: null,
         error: 'An unknown error occurred.',

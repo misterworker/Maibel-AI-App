@@ -4,14 +4,14 @@ import { useTheme } from "../../context/ThemeContext";
 import { themeStyles } from "../../context/themeStyles";
 import { View, StyleSheet, Text, ImageBackground, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getCoach, getOnboardDay, getUserID } from '../../hooks/getFromStorage';
+import { getCoach, getOnboardDay, getUserID, getIsCompleted } from '../../utils/getFromStorage';
 import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
+import { challenges } from "../onboard/onboard_data";
 
 
 //* Onboarding Logic: If today is User's first day, launch bot messages using initiateOnboardingFlow.
-
 
 
 export default function Chat() {
@@ -38,50 +38,62 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    const setCoachDetails = async () => {
-      const coachDetails = await getCoach();
-      const coachId = coachDetails.coachId;
-      const name = coachDetails.name;
-      const personalities = coachDetails.personalities;
-      const gender = coachDetails.gender;
-
-      const userID = await getUserID() || "123"; 
-      console.log(userID)
-
-      let background;
-      switch (coachId) {
-        case "male_coach":
-          background = require("../../assets/images/chat/chat_male.jpg");
-          setCoachName("Ethain");
-          break;
-        case "female_coach":
-          background = require("../../assets/images/chat/chat_female.jpg");
-          setCoachName("Maibel");
-          break;
-        case "custom_coach":
-          background = require("../../assets/images/onboard/Custom_Coach.jpeg");
-          setCoachName(name)
-          break;
-        default:
-          background = require("../../assets/images/onboard/Custom_Coach.jpeg");
-          setCoachName("Coach");
-      }
-
-      setPersonality(Array.isArray(personalities) ? personalities.join(", ") : personalities || "");
-      setGender(gender || "");
-      setCoachId(coachId || "");
-      setUserId(userID || "");
-      setCoachBackground(background);
-
-      const onboardDay = await getOnboardDay();
-      const today = new Date().toISOString().split("T")[0];
-      if (onboardDay === today) { //! set to [onboardDay === today]
-        setChallenge("onboard");
-      }
+    const fetchAndSetDetails = async () => {
+      await setCoachDetails();
+      await setChallengeDetails();
     };
-
-    setCoachDetails();
+  
+    fetchAndSetDetails();
   }, [setChallenge]);
+  
+  const setCoachDetails = async () => {
+    const coachDetails = await getCoach();
+    const coachId = coachDetails.coachId;
+    const name = coachDetails.name;
+    const personalities = coachDetails.personalities;
+    const gender = coachDetails.gender;
+  
+    const userID = await getUserID() || "123";
+  
+    let background;
+    switch (coachId) {
+      case "male_coach":
+        background = require("../../assets/images/chat/chat_male.jpg");
+        setCoachName("Ethain");
+        break;
+      case "female_coach":
+        background = require("../../assets/images/chat/chat_female.jpg");
+        setCoachName("Maibel");
+        break;
+      case "custom_coach":
+        background = require("../../assets/images/onboard/Custom_Coach.jpeg");
+        setCoachName(name);
+        break;
+      default:
+        background = require("../../assets/images/onboard/Custom_Coach.jpeg");
+        setCoachName("Coach");
+    }
+  
+    setPersonality(Array.isArray(personalities) ? personalities.join(", ") : personalities || "");
+    setGender(gender || "");
+    setCoachId(coachId || "");
+    setUserId(userID || "");
+    setCoachBackground(background);
+  };
+  
+  const setChallengeDetails = async () => {
+    const onboardDay = await getOnboardDay();
+    const isCompleted = await getIsCompleted();
+    if (!isCompleted) {
+      console.log("Onboard Day: ", onboardDay)
+      const currentChallenge = challenges.find((ch) => ch.id === onboardDay);
+      if (currentChallenge) {
+        setChallenge(currentChallenge as any);
+      }
+    } else {
+      setChallenge({ id: 1, type: "chat", title: "obtain data", desc: "None" });
+    }
+  };
 
   const styles = StyleSheet.create({
     safeArea: {
@@ -130,7 +142,7 @@ export default function Chat() {
           <Header coachName={coachName} botAvatar={botAvatar} />
           <GiftedChat
             messages={messages}
-            onSend={(messages) => handleSend(messages, challenge)}
+            onSend={(messages) => handleSend(messages, challenge.type)}
             user={{ _id: 1, name: "User" }}
             placeholder="Type your message..."
             showUserAvatar={true}

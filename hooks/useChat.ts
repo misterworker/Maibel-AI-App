@@ -3,6 +3,8 @@ import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { botResponse, validateResponse } from "../utils/botApi";
 import * as ImagePicker from "expo-image-picker";
 import { initiateOnboardingFlow } from "./useOnboardingFlow";
+import { toggleChallengeCompleted } from "../utils/SecureStorage"
+import { router } from "expo-router";
 
 export const useChat = (
   userId: string,
@@ -15,21 +17,18 @@ export const useChat = (
 ) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [challenge, setChallenge] = useState("none");
-  const [buttons, setButtons] = useState<string[]>([]);
-  const [buttonsEnabled, setButtonsEnabled] = useState(false);
+  const [challenge, setChallenge] = useState({ id: 0, type: "none", title: "none", desc: "none"});
 
   const readyPromiseRef = useRef<(() => void) | null>(null);
   const replyPromiseRef = useRef<((reply: string) => void) | null>(null);
 
   const handleSend = useCallback(
-    (newMessages: IMessage[] = [], challenge: string) => {
+    (newMessages: IMessage[] = [], challengeType: string) => {
       const userMessage = newMessages[0];
-
       if (userMessage && userMessage.text) {
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
 
-        if (challenge == "none") {
+        if (challengeType == "none" || challengeType=="prog") {
           setIsStreaming(true);
 
           botResponse(userMessage.text, userId, coachId, personality, gender, coachBackgroundDesc, (chunk) => {
@@ -76,9 +75,8 @@ export const useChat = (
             });
             setIsStreaming(false);
           });
-        } else if (challenge == "onboard") {
-          if (userMessage.text.toUpperCase() === "READY") {
-            setButtonsEnabled(true);
+        } else if (challengeType == "chat") {
+          if (userMessage.text.toUpperCase().startsWith("READY")) {
             if (readyPromiseRef.current) {
               readyPromiseRef.current();
               readyPromiseRef.current = null;
@@ -91,22 +89,21 @@ export const useChat = (
             replyPromiseRef.current = null;
           }
         }
+        
       }
     },
     [userId, coachId, coachName, botAvatar, personality, gender, coachBackgroundDesc]
   );
-
+  
+  const markChallengeAsCompleted = async () => {
+    toggleChallengeCompleted(true); // Mark the challenge as completed
+    router.push({ pathname: '/profile', params: { isCompleted: 'false' } });
+  };
   const waitForReady = () => {
     return new Promise<void>((resolve) => {
       readyPromiseRef.current = resolve;
     });
   };
-
-  // const waitForReply = () => {
-  //   return new Promise<void>((resolve) => {
-  //     replyPromiseRef.current = resolve;
-  //   });
-  // };
 
   const waitForReply = (question: string) => {
     return new Promise<string>(async (resolve) => {
@@ -117,8 +114,8 @@ export const useChat = (
           replyPromiseRef.current = innerResolve; // Resolving user reply input
         });
   
-        const { isValid, manipulative, nudge } = await validateResponse(question, userReply);
-  
+        const { isNonsense, manipulative, nudge } = await validateResponse(question, userReply);
+
         if (manipulative) {
           setIsStreaming(false)
           setMessages((previousMessages) =>
@@ -131,7 +128,7 @@ export const useChat = (
               },
             ])
           );
-        } else if (!isValid) {
+        } else if (isNonsense) {
           setIsStreaming(false)
           setMessages((previousMessages) =>
             GiftedChat.append(previousMessages, [
@@ -181,7 +178,7 @@ export const useChat = (
   };
 
   useEffect(() => {
-    if (challenge == "onboard") {
+    if (challenge.type === "chat") {
       const startOnboarding = async () => {
         await initiateOnboardingFlow(
           coachName,
@@ -190,11 +187,33 @@ export const useChat = (
           waitForReady,
           waitForReply,
           setIsStreaming,
-          () => setChallenge("onboard")
+          markChallengeAsCompleted
         );
       };
 
       startOnboarding();
+    }
+    else if (challenge.type === "prog") {
+      const startNewChallenge = async() => {
+        setIsStreaming(true);
+        setTimeout(() => {
+          setMessages((prevMessages) => [
+            {
+              _id: new Date().getTime(),
+              text: challenge.desc,
+              createdAt: new Date(),
+              user: {
+                _id: 2,
+                name: coachName,
+                avatar: botAvatar,
+              },
+            },
+            ...prevMessages,
+          ]);
+          setIsStreaming(false);
+        }, 2000);
+      }
+      startNewChallenge();
     }
   }, [challenge]);
 

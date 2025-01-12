@@ -1,14 +1,22 @@
+import { Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Image, Text } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useTheme } from '../../context/ThemeContext';
 import { themeStyles } from "../../context/themeStyles";
 import { StatusBar } from "expo-status-bar";
+import * as Haptics from 'expo-haptics';
 
 
 export default function TabLayout() {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
+
+  const handleTabPress = (focused: boolean) => {
+    if (Platform.OS !== 'web' && focused) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  };
 
   return (
     <>
@@ -49,6 +57,7 @@ export default function TabLayout() {
               </Text>
             ) : null, // Only show label when focused
           tabBarIcon: ({ focused }) => {
+            handleTabPress(focused);
             const { theme } = useTheme();
             const iconColor = theme === 'light' ? 'black' : 'white';
             const opacity = focused ? 1 : 0.6;
@@ -75,6 +84,7 @@ export default function TabLayout() {
               </Text>
             ) : null, // Only show label when focused
           tabBarIcon: ({ focused }) => {
+            handleTabPress(focused);
             const { theme } = useTheme();
             const iconColor = theme === 'light' ? 'black' : 'white';
             const opacity = focused ? 1 : 0.6;
@@ -100,13 +110,14 @@ export default function TabLayout() {
                 Profile
               </Text>
             ) : null, // Only show label when focused
-            tabBarIcon: ({ focused }) => {
-              const { theme } = useTheme();
-              const iconColor = theme === 'light' ? 'black' : 'white';
-              const opacity = focused ? 1 : 0.6;
-  
-              return <Feather name="user" size={28} color={iconColor} style={{ opacity }} />;
-            },
+          tabBarIcon: ({ focused }) => {
+            handleTabPress(focused);
+            const { theme } = useTheme();
+            const iconColor = theme === 'light' ? 'black' : 'white';
+            const opacity = focused ? 1 : 0.6;
+
+            return <Feather name="user" size={28} color={iconColor} style={{ opacity }} />;
+          },
         }}
       />
       <Tabs.Screen
@@ -126,6 +137,7 @@ export default function TabLayout() {
               </Text>
             ) : null, // Only show label when focused
             tabBarIcon: ({ focused }) => {
+              handleTabPress(focused);
               const { theme } = useTheme();
               const iconColor = theme === 'light' ? 'black' : 'white';
               const opacity = focused ? 1 : 0.6;
