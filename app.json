@@ -28,7 +28,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -44,7 +44,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ada6a413-d6fd-448b-9fb7-294c112120ae"
+        "projectId": "1178287d-1f98-48f4-8c78-83fe5b63b450"
       }
     },
     "owner": "ethanworker"

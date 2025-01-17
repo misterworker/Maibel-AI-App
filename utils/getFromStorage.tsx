@@ -18,7 +18,7 @@ export const getCoach = async () => {
 };
 
 export const getOnboardDay = async() => {
-  const onboardDay = await getFromSecureStorage("onboardDay") as unknown as number
+  const onboardDay = await getFromSecureStorage("onboardDay") as string
   return (onboardDay)
 };
 
@@ -29,8 +29,13 @@ export const getUserID = async() => {
 
 export const getIsCompleted = async() => {
   const isCompleted = await getFromSecureStorage("isCompleted")
-  if (isCompleted === "false") {return false}
+  if (isCompleted === "true") {return true}
   else {
-    return true
+    return false
   }
+}
+
+export const getRecommendation = async() => {
+  const recommendation = await getFromSecureStorage("recommendation")
+  return recommendation as string
 }

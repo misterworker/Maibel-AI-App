@@ -7,7 +7,7 @@ const Confetti: React.FC = () => {
     <View style={styles.overlay}>
       <LottieView
         style={styles.lottie}
-        source={require('../assets/gifs/confetti.json')} // Adjust the path as needed
+        source={require('../assets/gifs/confetti.json')}
         autoPlay
         loop={false}
       />

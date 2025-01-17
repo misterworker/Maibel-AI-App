@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { getFromSecureStorage } from '../utils/SecureStorage';
 import { initializeBackgroundTask } from '../utils/backgroundTask';
 import * as Notifications from 'expo-notifications';
+import { removeFromSecureStorage } from "../utils/SecureStorage";
 
 export default function Onboarding() {
   const router = useRouter();
@@ -41,11 +42,14 @@ export default function Onboarding() {
 
   useEffect(() => {
     const checkDayAndRedirect = async () => {
+  
       try {
         const onboardDay = await getFromSecureStorage("onboardDay");
         const userID = await getFromSecureStorage("userID");
+        
         if (onboardDay && userID) {
           router.push("/(tabs)/chat");
+          setIsChecking(false);
         } else {
           setIsChecking(false);
         }

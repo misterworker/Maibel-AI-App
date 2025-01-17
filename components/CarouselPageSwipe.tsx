@@ -73,13 +73,10 @@ const CarouselComponent: React.FC<CarouselComponentProps> = ({ onCoachSelect }) 
         width={width}
         height={height}
         data={slides}
+        onProgressChange={progress}
         loop
         renderItem={renderItem}
-        onProgressChange={(offsetProgress, absoluteProgress) => {
-          progress.value = absoluteProgress;
-        }}
       />
-
       <Pagination.Basic
         progress={progress}
         data={slides}
@@ -100,7 +97,6 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   button: {
-    top: height * 0.85,
     marginBottom: 50,
     alignSelf: "center",
     width: "80%",

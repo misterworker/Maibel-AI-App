@@ -28,7 +28,7 @@ export const initOnboardStoryData = {
   initOnboard_5_day1: {
     image: require('../../assets/images/onboard/choose-ai.jpg'),
     buttons: [
-      { label: "Let's Go!", link: "/(onboard/choose-ai)",  marginBottom: 50, style: "gradient" },
+      { label: "Let's Go!", link: "/onboard/choose-ai",  marginBottom: 50, style: "gradient" },
     ],
   },
 };
@@ -48,7 +48,7 @@ export const dialogueFlow = [
 ];
 
 export const challenges = [
-  { id: 1, type: "chat", title: "obtain data", desc: "None"},
-  { id: 2, type: "prog", title: "drink water", desc: (liters: number) => `Drink ${liters} liters of water.`}
+  { id: "1", type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!"},
+  { id: "2", type: "prog", title: "drink water", desc: (liters: string) => `Drink ${liters} liters of water.`}
 
 ]

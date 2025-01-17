@@ -12,7 +12,6 @@ export default function onboardStoryPage() {
 
   let story;
 
-  console.log(story)
   if ((slug as string).startsWith("initOnboard")) {
     story = initOnboardStoryData[slug as keyof typeof initOnboardStoryData];
   }

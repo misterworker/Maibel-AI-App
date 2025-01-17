@@ -27,7 +27,7 @@ export const useChat = (
       const userMessage = newMessages[0];
       if (userMessage && userMessage.text) {
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-
+        
         if (challengeType == "none" || challengeType=="prog") {
           setIsStreaming(true);
 
@@ -97,7 +97,7 @@ export const useChat = (
   
   const markChallengeAsCompleted = async () => {
     toggleChallengeCompleted(true); // Mark the challenge as completed
-    router.push({ pathname: '/profile', params: { isCompleted: 'false' } });
+    router.push({ pathname: '/profile', params: { isCompleted: 'true' } });
   };
   const waitForReady = () => {
     return new Promise<void>((resolve) => {
@@ -160,7 +160,7 @@ export const useChat = (
     }
 
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
     });
 
     if (!pickerResult.canceled) {

@@ -9,6 +9,7 @@ import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
 import { challenges } from "../onboard/onboard_data";
+import 'react-native-get-random-values';
 
 
 //* Onboarding Logic: If today is User's first day, launch bot messages using initiateOnboardingFlow.
@@ -84,14 +85,14 @@ export default function Chat() {
   const setChallengeDetails = async () => {
     const onboardDay = await getOnboardDay();
     const isCompleted = await getIsCompleted();
+    console.log("Is Completed: ", isCompleted)
     if (!isCompleted) {
-      console.log("Onboard Day: ", onboardDay)
       const currentChallenge = challenges.find((ch) => ch.id === onboardDay);
       if (currentChallenge) {
         setChallenge(currentChallenge as any);
       }
     } else {
-      setChallenge({ id: 1, type: "chat", title: "obtain data", desc: "None" });
+      
     }
   };
 
@@ -142,7 +143,8 @@ export default function Chat() {
           <Header coachName={coachName} botAvatar={botAvatar} />
           <GiftedChat
             messages={messages}
-            onSend={(messages) => handleSend(messages, challenge.type)}
+            onSend={(messages) => {
+              handleSend(messages, challenge.type)}}
             user={{ _id: 1, name: "User" }}
             placeholder="Type your message..."
             showUserAvatar={true}
