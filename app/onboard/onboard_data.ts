@@ -1,3 +1,5 @@
+import { initiateOnboardingFlow } from "@/hooks/useOnboardingFlow";
+
 export const initOnboardStoryData = {
   initOnboard_1_day1: {
     image: require('../../assets/images/onboard/story_onboard_1.jpg'),
@@ -47,8 +49,16 @@ export const dialogueFlow = [
   { id: 11, message: "Thanks for sharing!", next: "finish"}
 ];
 
-export const challenges = [
-  { id: "1", type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!"},
+interface Challenge {
+  id: string;
+  type: string;
+  title: string;
+  desc: string | ((liters: string) => string);
+  qns?: number
+}
+
+export const challenges: Challenge[] = [
+  { id: "1", type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!", qns: 5},
   { id: "2", type: "prog", title: "drink water", desc: (liters: string) => `Drink ${liters} liters of water.`}
 
 ]

@@ -50,7 +50,7 @@ export default function Chat() {
   const setCoachDetails = async () => {
     const coachDetails = await getCoach();
     const coachId = coachDetails.coachId;
-    const name = coachDetails.name;
+    const coachName = coachDetails.coachName;
     const personalities = coachDetails.personalities;
     const gender = coachDetails.gender;
   
@@ -68,7 +68,7 @@ export default function Chat() {
         break;
       case "custom_coach":
         background = require("../../assets/images/onboard/Custom_Coach.jpeg");
-        setCoachName(name);
+        setCoachName(coachName);
         break;
       default:
         background = require("../../assets/images/onboard/Custom_Coach.jpeg");
@@ -85,14 +85,16 @@ export default function Chat() {
   const setChallengeDetails = async () => {
     const onboardDay = await getOnboardDay();
     const isCompleted = await getIsCompleted();
-    console.log("Is Completed: ", isCompleted)
+    console.log("isCompleted & onboardDay: ", isCompleted, onboardDay);
+    
     if (!isCompleted) {
-      const currentChallenge = challenges.find((ch) => ch.id === onboardDay);
+      const currentChallenge = challenges.find((ch) => {
+        return ch.id.trim() === onboardDay.trim();
+      });
+  
       if (currentChallenge) {
         setChallenge(currentChallenge as any);
       }
-    } else {
-      
     }
   };
 

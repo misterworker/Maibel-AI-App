@@ -1,6 +1,6 @@
 import { saveToSecureStorage } from './SecureStorage';
 
-// Function to set onboard day
+//! indicators
 export const setOnboardDay = async (onboardDay: number) => {
   try {
     await saveToSecureStorage("onboardDay", onboardDay.toString());
@@ -9,16 +9,6 @@ export const setOnboardDay = async (onboardDay: number) => {
   }
 };
 
-// Function to set user ID
-export const setUserID = async (userID: string) => {
-  try {
-    await saveToSecureStorage("userID", userID);
-  } catch (error) {
-    console.error("Error setting user ID in secure storage", error);
-  }
-};
-
-// Function to set completion status
 export const setIsCompleted = async (isCompleted: boolean) => {
   try {
     await saveToSecureStorage("isCompleted", isCompleted ? "true" : "false");
@@ -27,7 +17,53 @@ export const setIsCompleted = async (isCompleted: boolean) => {
   }
 };
 
-// Function to set coach ID
+export const setOnboardDate = async (onboardDate: string) => {
+  try {
+    await saveToSecureStorage("onboardDate", onboardDate);
+  } catch (error) {
+    console.error("Error setting onboard date in secure storage", error);
+  }
+};
+
+//? Recommendation for current challenge based on user profile
+export const setRecomendation = async(recommendation: string) => {
+  //* TODO Recommendation Logic here
+  try {
+    await saveToSecureStorage("recommendation", recommendation);
+  } catch (error) {
+    console.error("Error setting recommendation in secure storage", error);
+  }
+}
+
+//? Current Progress for Challenge
+export const setChallengeProgress = async(challengeProgress: string) => {
+  try {
+    await saveToSecureStorage("challengeProgress", challengeProgress);
+  } catch (error) {
+    console.error("Error setting challengeProgress in secure storage", error);
+  }
+}
+
+//! User Information
+export const setUserID = async (userID: string) => {
+  try {
+    await saveToSecureStorage("userID", userID);
+  } catch (error) {
+    console.error("Error setting user ID in secure storage", error);
+  }
+};
+
+//! Coach Details
+//? Only custom coaches should have gender, personalities and background attribute
+export const setCustomCoach = async (coach: any) => {
+  try {
+    const coachString = JSON.stringify(coach);
+    await saveToSecureStorage("coach", coachString);
+  } catch (error) {
+    console.error("Error setting coach in secure storage", error);
+  }
+};
+
 export const setCoachId = async (coachId: string) => {
   try {
     await saveToSecureStorage("coachId", coachId);
@@ -36,40 +72,5 @@ export const setCoachId = async (coachId: string) => {
   }
 };
 
-// Function to set user's name
-export const setName = async (name: string) => {
-  try {
-    await saveToSecureStorage("name", name);
-  } catch (error) {
-    console.error("Error setting name in secure storage", error);
-  }
-};
 
-// Function to set coach background
-export const setCoachBackground = async (background: string) => {
-  try {
-    await saveToSecureStorage("background", background);
-  } catch (error) {
-    console.error("Error setting coach background in secure storage", error);
-  }
-};
 
-// Function to set personalities
-export const setPersonalities = async (personalities: string[]) => {
-  try {
-    for (let i = 0; i < personalities.length; i++) {
-      await saveToSecureStorage(`personality_${i + 1}`, personalities[i]);
-    }
-  } catch (error) {
-    console.error("Error setting personalities in secure storage", error);
-  }
-};
-
-// Function to set gender
-export const setGender = async (gender: string) => {
-  try {
-    await saveToSecureStorage("selectedGender", gender);
-  } catch (error) {
-    console.error("Error setting gender in secure storage", error);
-  }
-};

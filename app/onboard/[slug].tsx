@@ -3,12 +3,10 @@ import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, } from "reac
 import { initOnboardStoryData } from "./onboard_data";
 import { useTheme } from '../../context/ThemeContext';
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect } from "react";
 
 export default function onboardStoryPage() {
   const { slug } = useLocalSearchParams();
   const router = useRouter();
-  const { theme } = useTheme();
 
   let story;
 
@@ -26,7 +24,6 @@ export default function onboardStoryPage() {
 
   return (
     <ImageBackground source={story.image} style={styles().backgroundImage} resizeMode="cover">
-      {/* <StatusBar translucent /> */}
       <View style={styles().buttonContainer}>
         {story.buttons.map((button, index) => (
           <TouchableOpacity

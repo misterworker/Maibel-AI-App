@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../context/ThemeContext';
 import { themeStyles } from '../../context/themeStyles';
 import Confetti from '../../components/Confetti';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { challenges } from '../onboard/onboard_data';
-import { getOnboardDay, getIsCompleted, getRecommendation } from '../../utils/getFromStorage';
+import { getOnboardDay, getIsCompleted, getRecommendation, getChallengeProgress } from '../../utils/getFromStorage';
 
 interface Challenge {
   id: string;
@@ -15,40 +15,51 @@ interface Challenge {
   description: string;
 }
 
-const ProfilePage: React.FC = () => {
+export default function ProfilePage() {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
   const route = useRoute();
-  const { isCompleted } = route.params as any || false;
+  const { isCompleted: initialCompleted } = route.params as any || { isCompleted: false };
 
   const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [isCompleted, setIsCompleted] = useState(initialCompleted);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const recommendation = await getRecommendation(); // Ensure recommendation is fetched first
-      const onboardDay = await getOnboardDay();
-      const completed = await getIsCompleted();
+  const fetchData = useCallback(async () => {
+    const recommendation = await getRecommendation();
+    const onboardDay = await getOnboardDay();
+    const completed = await getIsCompleted();
+    let challengeProgress = await getChallengeProgress() as any;
+    challengeProgress = Number(challengeProgress);
 
-      if (!completed) {
-        console.log("Onboard Day!: ", onboardDay);
-        const currentChallenge = challenges.find((ch) => ch.id === onboardDay);
-        console.log(currentChallenge)
-        if (currentChallenge) {
-          const description = typeof currentChallenge.desc === 'string'
-            ? currentChallenge.desc
-            : currentChallenge.desc(recommendation);
-          setChallenge({
-            id: currentChallenge.id,
-            title: currentChallenge.title,
-            progress: 0.5,
-            description: description,
-          });
-        }
+ 
+    console.log("Current Challenge Progress", challengeProgress)
+    console.log("Current Challenge: ", challenge)
+
+    setIsCompleted(completed);
+
+    const currentChallenge = challenges.find((ch) => ch.id.trim() === onboardDay.trim());
+      if (currentChallenge) {
+
+        const description = typeof currentChallenge.desc === 'string'
+          ? currentChallenge.desc
+          : currentChallenge.desc(recommendation);
+        setChallenge({
+          id: currentChallenge.id,
+          title: currentChallenge.title,
+          progress: challengeProgress,
+          description: description,
+        });
       }
-    };
-
-    fetchData();
+      console.log("New Challenge: ", challenge)
   }, []);
+
+
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [fetchData])
+  );
 
   if (!challenge) {
     return (
@@ -67,12 +78,14 @@ const ProfilePage: React.FC = () => {
       <View style={[styles.challengeCard, { backgroundColor: currentTheme.cardBackground }]}>
         <Text style={[styles.challengeTitle, { color: currentTheme.text }]}>{challenge.title}</Text>
         <Text style={[styles.description, { color: currentTheme.subtext }]}>Description: {challenge.description}</Text>
-        <ProgressBar progress={challenge.progress} color={currentTheme.primary} style={styles.progressBar} />
-        <Text style={[styles.progressText, { color: currentTheme.subtext }]}>{Math.round(challenge.progress * 100)}% Completed</Text>
+        <ProgressBar key={challenge.progress} progress={challenge.progress} color={currentTheme.primary} style={styles.progressBar} />
+        <Text style={[styles.progressText, { color: currentTheme.subtext }]}>
+          {Math.round(challenge.progress * 100)}% Completed
+        </Text>
       </View>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -112,5 +125,3 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
-
-export default ProfilePage;

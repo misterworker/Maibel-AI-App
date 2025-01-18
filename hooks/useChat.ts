@@ -5,6 +5,8 @@ import * as ImagePicker from "expo-image-picker";
 import { initiateOnboardingFlow } from "./useOnboardingFlow";
 import { toggleChallengeCompleted } from "../utils/SecureStorage"
 import { router } from "expo-router";
+import { setChallengeProgress } from "@/utils/saveToSecureStorage";
+import { getChallengeProgress } from "@/utils/getFromStorage";
 
 export const useChat = (
   userId: string,
@@ -17,10 +19,29 @@ export const useChat = (
 ) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [challenge, setChallenge] = useState({ id: 0, type: "none", title: "none", desc: "none"});
+  const [challenge, setChallenge] = useState({ id: 0, type: "none", title: "none", desc: "none", qns: 0});
 
   const readyPromiseRef = useRef<(() => void) | null>(null);
   const replyPromiseRef = useRef<((reply: string) => void) | null>(null);
+
+  const incrementChallengeProgress = async () => {
+    try {
+      const curChallengeProgress = await getChallengeProgress();
+      const totalQuestions = challenge.qns;
+      
+      const currentProgress = curChallengeProgress ? parseFloat(curChallengeProgress) : 0;
+  
+      let newChallengeProgress = currentProgress + 1 / totalQuestions;
+      newChallengeProgress = Math.min(newChallengeProgress, 1);
+      newChallengeProgress = parseFloat(newChallengeProgress.toFixed(2));
+  
+      await setChallengeProgress(newChallengeProgress.toString());
+    } catch (error) {
+      console.error("Error updating challenge progress", error);
+    }
+};
+
+  
 
   const handleSend = useCallback(
     (newMessages: IMessage[] = [], challengeType: string) => {
@@ -28,7 +49,7 @@ export const useChat = (
       if (userMessage && userMessage.text) {
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
         
-        if (challengeType == "none" || challengeType=="prog") {
+        if (challengeType == "none" || challengeType == "prog") {
           setIsStreaming(true);
 
           botResponse(userMessage.text, userId, coachId, personality, gender, coachBackgroundDesc, (chunk) => {
@@ -142,6 +163,7 @@ export const useChat = (
           );
         } else {
           // Valid response received, break the loop and resolve the reply
+          incrementChallengeProgress()
           validResponse = true;
           resolve(userReply);  // Return the valid reply
         }

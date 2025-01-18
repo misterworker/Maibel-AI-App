@@ -1,31 +1,10 @@
 import { getFromSecureStorage } from '../utils/SecureStorage';
 
-export const getCoach = async () => {
-  const coachId = await getFromSecureStorage("coachId");
-  const name = await getFromSecureStorage("name") as string;
-  const coachBackground = await getFromSecureStorage("background");
-  const personality_1 = await getFromSecureStorage("personality_1");
-  const personality_2 = await getFromSecureStorage("personality_2");
-  const personality_3 = await getFromSecureStorage("personality_3");
-  const gender = await getFromSecureStorage("selectedGender");
-  return {
-    coachId,
-    name,
-    coachBackground,
-    personalities: [personality_1, personality_2, personality_3].filter(Boolean),
-    gender,
-  };
-};
-
+//! indicators
 export const getOnboardDay = async() => {
   const onboardDay = await getFromSecureStorage("onboardDay") as string
   return (onboardDay)
 };
-
-export const getUserID = async() => {
-  const userID = await getFromSecureStorage("userID")
-  return (userID)
-}
 
 export const getIsCompleted = async() => {
   const isCompleted = await getFromSecureStorage("isCompleted")
@@ -39,3 +18,28 @@ export const getRecommendation = async() => {
   const recommendation = await getFromSecureStorage("recommendation")
   return recommendation as string
 }
+
+export const getChallengeProgress = async() => {
+  const challengeProgress = await getFromSecureStorage("challengeProgress")
+  return challengeProgress as string
+}
+
+//! User Information
+export const getUserID = async() => {
+  const userID = await getFromSecureStorage("userID")
+  return (userID)
+}
+
+//! Coach Details
+export const getCoach = async () => {
+  const coachId = await getFromSecureStorage("coachId");
+  const coachString = await getFromSecureStorage("coach") || "";
+  const coach = JSON.parse(coachString);
+  return {
+    coachId: coachId,
+    coachName: coach.coachName,
+    coachBackground: coach.background,
+    personalities: [coach.personality_1, coach.personality_2, coach.personality_3].filter(Boolean),
+    gender: coach.gender,
+  };
+};
