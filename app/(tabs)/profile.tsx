@@ -1,67 +1,66 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../context/ThemeContext';
 import { themeStyles } from '../../context/themeStyles';
 import Confetti from '../../components/Confetti';
-import { useRoute, useFocusEffect } from '@react-navigation/native';
-import { challenges } from '../onboard/onboard_data';
-import { getOnboardDay, getIsCompleted, getRecommendation, getChallengeProgress } from '../../utils/getFromStorage';
+import { useChallengeData } from '../../hooks/useChallengeData';
+import Challenge from '../onboard/onboard_data';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-interface Challenge {
-  id: string;
-  title: string;
-  progress: number;
-  description: string;
+function ChallengeCard({ challenge, currentTheme, isCompleted }: { challenge: Challenge, currentTheme: any, isCompleted?: boolean }) {
+  return (
+    <View
+      style={[
+        styles.challengeCard,
+        { 
+          backgroundColor: isCompleted ? currentTheme.successBackground : currentTheme.cardBackground,
+          borderColor: isCompleted ? currentTheme.success : 'transparent',
+          borderWidth: isCompleted ? 2 : 0,  // Adds a border for completed challenges
+          shadowColor: isCompleted ? currentTheme.success : '#000',  // Lighter shadow for completed
+          shadowOpacity: isCompleted ? 0.2 : 0.1,
+        },
+      ]}
+    >
+      <View style={styles.challengeHeader}>
+        <Text style={[styles.challengeTitle, { color: currentTheme.text }]}>
+          {challenge.title}
+        </Text>
+
+        {/* Add checkmark icon next to the title */}
+        {isCompleted && (
+          <MaterialCommunityIcons
+            name="check-circle"
+            size={24}
+            color={currentTheme.success}
+            style={styles.checkmarkIcon}
+          />
+        )}
+      </View>
+
+      <Text style={[styles.description, { color: currentTheme.subtext }]}>
+        {challenge.desc}
+      </Text>
+
+      <ProgressBar
+        key={challenge.progress}
+        progress={isCompleted ? 1 : challenge.progress}
+        color={isCompleted ? currentTheme.success : currentTheme.primary}
+        style={styles.progressBar}
+      />
+      <Text style={[styles.progressText, { color: currentTheme.subtext }]}>
+        {isCompleted ? 'Completed' : Math.round((challenge.progress || 0) * 100) + '% Completed'}
+      </Text>
+    </View>
+  );
 }
 
 export default function ProfilePage() {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
-  const route = useRoute();
-  const { isCompleted: initialCompleted } = route.params as any || { isCompleted: false };
+  const { challenge, isCompleted, completedChallenges } = useChallengeData();
 
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
-  const [isCompleted, setIsCompleted] = useState(initialCompleted);
-
-  const fetchData = useCallback(async () => {
-    const recommendation = await getRecommendation();
-    const onboardDay = await getOnboardDay();
-    const completed = await getIsCompleted();
-    let challengeProgress = await getChallengeProgress() as any;
-    challengeProgress = Number(challengeProgress);
-
- 
-    console.log("Current Challenge Progress", challengeProgress)
-    console.log("Current Challenge: ", challenge)
-
-    setIsCompleted(completed);
-
-    const currentChallenge = challenges.find((ch) => ch.id.trim() === onboardDay.trim());
-      if (currentChallenge) {
-
-        const description = typeof currentChallenge.desc === 'string'
-          ? currentChallenge.desc
-          : currentChallenge.desc(recommendation);
-        setChallenge({
-          id: currentChallenge.id,
-          title: currentChallenge.title,
-          progress: challengeProgress,
-          description: description,
-        });
-      }
-      console.log("New Challenge: ", challenge)
-  }, []);
-
-
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [fetchData])
-  );
-
-  if (!challenge) {
+  if (!challenge && !completedChallenges) {
     return (
       <View style={styles.container}>
         <Text style={[styles.pageTitle, { color: currentTheme.text }]}>Loading Challenge...</Text>
@@ -69,20 +68,33 @@ export default function ProfilePage() {
     );
   }
 
+  const defaultChallenge = {
+    id: 'default',
+    title: 'See You Tomorrow!',
+    desc: 'Get ready for a new challenge tomorrow.',
+    progress: 1,
+    type: 'default',
+  };
+
+  // If there is no current challenge, use the default one
+  const challengeToShow = challenge || defaultChallenge;
+
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme.background }]}>
       <Text style={[styles.pageTitle, { color: currentTheme.text }]}>Your Current Challenge</Text>
 
       {isCompleted && <Confetti />}
+      <ChallengeCard challenge={challengeToShow} currentTheme={currentTheme} isCompleted={false} />
 
-      <View style={[styles.challengeCard, { backgroundColor: currentTheme.cardBackground }]}>
-        <Text style={[styles.challengeTitle, { color: currentTheme.text }]}>{challenge.title}</Text>
-        <Text style={[styles.description, { color: currentTheme.subtext }]}>Description: {challenge.description}</Text>
-        <ProgressBar key={challenge.progress} progress={challenge.progress} color={currentTheme.primary} style={styles.progressBar} />
-        <Text style={[styles.progressText, { color: currentTheme.subtext }]}>
-          {Math.round(challenge.progress * 100)}% Completed
-        </Text>
-      </View>
+      <Text style={[styles.sectionTitle, { color: currentTheme.text, marginBottom: 20 }]}>Completed Challenges</Text>
+      {completedChallenges.map((completedChallenge) => (
+        <ChallengeCard
+          key={completedChallenge.id}
+          challenge={completedChallenge}
+          currentTheme={currentTheme}
+          isCompleted={true}  // Mark completed challenges
+        />
+      ))}
     </ScrollView>
   );
 }
@@ -107,6 +119,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  challengeHeader: {
+    flexDirection: 'row',  // To align title and icon in a row
+    alignItems: 'center',  // Vertically center the title and icon
+    justifyContent: 'space-between', // Add space between them
+  },
   challengeTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -123,5 +140,13 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 12,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  checkmarkIcon: {
+    marginLeft: 10,  // Adds a little spacing between the title and the checkmark
   },
 });

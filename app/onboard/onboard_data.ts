@@ -49,16 +49,17 @@ export const dialogueFlow = [
   { id: 11, message: "Thanks for sharing!", next: "finish"}
 ];
 
-interface Challenge {
+export default interface Challenge {
   id: string;
   type: string;
   title: string;
-  desc: string | ((liters: string) => string);
-  qns?: number
+  desc: string;
+  qns?: number;
+  progress?: number
 }
 
 export const challenges: Challenge[] = [
   { id: "1", type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!", qns: 5},
-  { id: "2", type: "prog", title: "drink water", desc: (liters: string) => `Drink ${liters} liters of water.`}
+  { id: "2", type: "prog", title: "drink water", desc: "Drink {$liters} liters of water"}
 
 ]

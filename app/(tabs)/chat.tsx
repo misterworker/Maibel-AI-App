@@ -85,7 +85,6 @@ export default function Chat() {
   const setChallengeDetails = async () => {
     const onboardDay = await getOnboardDay();
     const isCompleted = await getIsCompleted();
-    console.log("isCompleted & onboardDay: ", isCompleted, onboardDay);
     
     if (!isCompleted) {
       const currentChallenge = challenges.find((ch) => {
