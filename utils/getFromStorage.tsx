@@ -3,7 +3,7 @@ import { getFromSecureStorage } from '../utils/SecureStorage';
 //! indicators
 export const getOnboardDay = async() => {
   const onboardDay = await getFromSecureStorage("onboardDay") as string
-  return (onboardDay)
+  return (+onboardDay)
 };
 
 export const getIsCompleted = async() => {

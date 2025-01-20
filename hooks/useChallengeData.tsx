@@ -21,22 +21,24 @@ export function useChallengeData() {
     setIsCompleted(completed);
 
     // Find the current challenge for the given onboardDay
-    const currentChallenge = challenges.find((ch) => ch.id.trim() === onboardDay.trim());
-    
+    const currentChallenge = challenges.find((ch) => ch.id === onboardDay);
+
+    // Determine the completed challenges based on the onboardDay
+    const completedChallengesList = challenges.filter((ch, index) => index < onboardDay - 1);
+
+    // Reset and update the completed challenges to avoid duplication
+    setCompletedChallenges(completedChallengesList);
+
     if (currentChallenge) {
-      // If the challenge is completed, ensure it's moved to completedChallenges only once
       if (completed && challengeProgress === 1) {
-        // Check if the current challenge is already in the completedChallenges list
         setCompletedChallenges((prevChallenges) => {
           if (!prevChallenges.some(ch => ch.id === currentChallenge.id)) {
-            console.log("Challenge already completed", prevChallenges)
             return [...prevChallenges, currentChallenge];
           }
           return prevChallenges;
         });
         setChallenge(null);
       } else {
-        // Otherwise, update current challenge if not completed
         setChallenge({
           id: currentChallenge.id,
           title: currentChallenge.title,
@@ -47,18 +49,8 @@ export function useChallengeData() {
       }
     }
 
-    // Determine the completed challenges based on the onboardDay
-    const completedChallengesList = challenges.filter((ch, index) => index < parseInt(onboardDay, 10) - 1);
+  }, []);
 
-    // Add previously completed challenges (without current challenge)
-    setCompletedChallenges((prevChallenges) => [
-      ...completedChallengesList,
-      ...prevChallenges,
-    ]);
-
-  }, []); // Remove completedChallenges from the dependency array
-
-  // Only run fetchData when the component is focused or mounted
   useFocusEffect(
     useCallback(() => {
       fetchData();

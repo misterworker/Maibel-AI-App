@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef  } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../context/ThemeContext';
+import { useModal } from '../../context/ModalContext';
 import { themeStyles } from '../../context/themeStyles';
 import Confetti from '../../components/Confetti';
 import { useChallengeData } from '../../hooks/useChallengeData';
 import Challenge from '../onboard/onboard_data';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import CongratulationModal from '@/components/CongratulationModal';
 
 function ChallengeCard({ challenge, currentTheme, isCompleted }: { challenge: Challenge, currentTheme: any, isCompleted?: boolean }) {
   return (
@@ -58,7 +60,22 @@ function ChallengeCard({ challenge, currentTheme, isCompleted }: { challenge: Ch
 export default function ProfilePage() {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
-  const { challenge, isCompleted, completedChallenges } = useChallengeData();
+  const { challenge, isCompleted, completedChallenges, fetchData  } = useChallengeData();
+  const { showModal, hideModal, isModalVisible, setModalWithDelay } = useModal();
+  const prevIsCompletedRef = useRef(isCompleted);
+
+  useEffect(() => {
+    if (isCompleted && !prevIsCompletedRef.current) {
+      setModalWithDelay(500);
+    }
+    prevIsCompletedRef.current = isCompleted;
+  }, [isCompleted, setModalWithDelay]);
+
+  const handleModalClose = () => {
+    console.log("Modal Closed")
+    hideModal();
+    fetchData();
+  };
 
   if (!challenge && !completedChallenges) {
     return (
@@ -69,10 +86,10 @@ export default function ProfilePage() {
   }
 
   const defaultChallenge = {
-    id: 'default',
+    id: 0,
     title: 'See You Tomorrow!',
     desc: 'Get ready for a new challenge tomorrow.',
-    progress: 1,
+    progress: 1, //* TODO Turn into countdown
     type: 'default',
   };
 
@@ -80,6 +97,7 @@ export default function ProfilePage() {
   const challengeToShow = challenge || defaultChallenge;
 
   return (
+    <>
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme.background }]}>
       <Text style={[styles.pageTitle, { color: currentTheme.text }]}>Your Current Challenge</Text>
 
@@ -96,6 +114,8 @@ export default function ProfilePage() {
         />
       ))}
     </ScrollView>
+    <CongratulationModal isVisible={isModalVisible} onClose={handleModalClose} />
+    </>
   );
 }
 
@@ -147,6 +167,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   checkmarkIcon: {
-    marginLeft: 10,  // Adds a little spacing between the title and the checkmark
+    marginLeft: 10,
   },
 });

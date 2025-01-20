@@ -43,14 +43,15 @@ export default function Onboarding() {
   useEffect(() => {
     const checkDayAndRedirect = async () => {
       try {
-        const onboardDay = await getFromSecureStorage("onboardDay");
-        const userID = await getFromSecureStorage("userID");
-        
         removeFromSecureStorage("isCompleted")
         removeFromSecureStorage("onboardDay")
         removeFromSecureStorage("challengeProgress")
+
+        const onboardDay = await getFromSecureStorage("onboardDay");
+        const userID = await getFromSecureStorage("userID");
+        
         if (onboardDay && userID) {
-          // router.push("/(tabs)/chat");
+          router.push("/(tabs)/chat");
           setIsChecking(false);
         } else {
           setIsChecking(false);

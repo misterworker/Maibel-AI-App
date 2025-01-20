@@ -88,7 +88,7 @@ export default function Chat() {
     
     if (!isCompleted) {
       const currentChallenge = challenges.find((ch) => {
-        return ch.id.trim() === onboardDay.trim();
+        return ch.id === onboardDay;
       });
   
       if (currentChallenge) {

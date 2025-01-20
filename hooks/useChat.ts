@@ -7,6 +7,7 @@ import { toggleChallengeCompleted } from "../utils/SecureStorage"
 import { router } from "expo-router";
 import { setChallengeProgress } from "@/utils/saveToSecureStorage";
 import { getChallengeProgress } from "@/utils/getFromStorage";
+import { useNotification } from "../context/NotificationContext";
 
 export const useChat = (
   userId: string,
@@ -46,6 +47,7 @@ export const useChat = (
   const handleSend = useCallback(
     (newMessages: IMessage[] = [], challengeType: string) => {
       const userMessage = newMessages[0];
+      markChallengeAsCompleted()
       if (userMessage && userMessage.text) {
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
         
@@ -116,9 +118,15 @@ export const useChat = (
     [userId, coachId, coachName, botAvatar, personality, gender, coachBackgroundDesc]
   );
   
+  const { showNotification } = useNotification();
+
   const markChallengeAsCompleted = async () => {
-    toggleChallengeCompleted(true); // Mark the challenge as completed
-    router.push({ pathname: '/profile', params: { isCompleted: 'true' } });
+    toggleChallengeCompleted(true);
+    showNotification("Challenge completed!", () => {
+      router.push({ 
+        pathname: '/profile'
+      });
+    });
   };
   const waitForReady = () => {
     return new Promise<void>((resolve) => {

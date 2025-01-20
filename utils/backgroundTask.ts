@@ -12,7 +12,8 @@ export const initializeBackgroundTask = () => {
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      if (hours === 0 && minutes < 30) {
+      console.log(`Is Running: Hours ${hours}, Minutes ${minutes}`);
+      if (hours === 0 && minutes < 0) {
         const isComplete = await getIsCompleted();
         if (isComplete) {
           let onboardDay = await getOnboardDay();
@@ -31,7 +32,7 @@ export const initializeBackgroundTask = () => {
   });
 
   BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    minimumInterval: 15 * 60, // 15 minutes
+    minimumInterval: 15 * 60,
     stopOnTerminate: false,
     startOnBoot: true,
   });
@@ -44,6 +45,6 @@ const scheduleNotification = () => {
       body: "A new challenge is ready for you!",
       sound: 'default',
     },
-    trigger: null, // Immediate trigger
+    trigger: null,
   });
 };
