@@ -72,7 +72,6 @@ export default function ProfilePage() {
   }, [isCompleted, setModalWithDelay]);
 
   const handleModalClose = () => {
-    console.log("Modal Closed")
     hideModal();
     fetchData();
   };

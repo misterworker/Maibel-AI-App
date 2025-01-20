@@ -1,5 +1,5 @@
 import { getOnboardDay } from '@/utils/getFromStorage';
-import { setOnboardDay, setIsCompleted } from '@/utils/saveToSecureStorage';
+import { setOnboardDay, setIsCompleted, setChallengeProgress } from '@/utils/saveToSecureStorage';
 import React from 'react';
 import { Modal, Text, Button, View, StyleSheet } from 'react-native';
 
@@ -13,6 +13,7 @@ const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, on
     const onboardDay = await getOnboardDay();
     await setIsCompleted(false);
     await setOnboardDay(onboardDay + 1);
+    await setChallengeProgress("0")
     onClose();
   }
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { GiftedChat, IMessage, InputToolbar, Send } from "react-native-gifted-chat";
 import { useTheme } from "../../context/ThemeContext";
 import { themeStyles } from "../../context/themeStyles";
@@ -9,6 +9,7 @@ import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
 import { challenges } from "../onboard/onboard_data";
+import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 
 
@@ -25,6 +26,7 @@ export default function Chat() {
   const [gender, setGender] = useState("");
   const [coachId, setCoachId] = useState("");
   const [userID, setUserId] = useState("");
+  const [onboardDay, setOnboardDay] = useState(0);
 
   const botAvatar = require("../../assets/images/Stan.jpeg");
 
@@ -39,13 +41,27 @@ export default function Chat() {
   );
 
   useEffect(() => {
+    const fetchAndSetOnboardDay = async () => {
+      console.log("Fetch and Set onboard day (Chat.tsx)")
+      const onboardDay = await getOnboardDay();
+      setOnboardDay(onboardDay);
+      await setCoachDetails();
+    };
+
+    fetchAndSetOnboardDay();
+  }, []); // Only runs once on component mount
+
+  useEffect(() => {
     const fetchAndSetDetails = async () => {
+      console.log("Set Details (Chat.tsx)")
       await setCoachDetails();
       await setChallengeDetails();
     };
-  
-    fetchAndSetDetails();
-  }, [setChallenge]);
+
+    if (onboardDay !== null) {
+      fetchAndSetDetails();
+    }
+  }, [onboardDay]); // Runs whenever onboardDay changes
   
   const setCoachDetails = async () => {
     const coachDetails = await getCoach();
@@ -83,7 +99,6 @@ export default function Chat() {
   };
   
   const setChallengeDetails = async () => {
-    const onboardDay = await getOnboardDay();
     const isCompleted = await getIsCompleted();
     
     if (!isCompleted) {
@@ -93,6 +108,7 @@ export default function Chat() {
   
       if (currentChallenge) {
         setChallenge(currentChallenge as any);
+        console.log("Current Challenge (Chat.tsx): ", currentChallenge)
       }
     }
   };
@@ -132,6 +148,19 @@ export default function Chat() {
     },
     sendContainer: {},
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      const modifyOnboardDay = async () => {
+        console.log("Fetch and Set onboard day (Chat.tsx)");
+        const onboardDay = await getOnboardDay();
+        setOnboardDay(onboardDay);
+        await setCoachDetails();
+      };
+  
+      modifyOnboardDay();
+    }, [])
+  );
 
   return coachBackground ? (
     <SafeAreaView style={styles.safeArea}>

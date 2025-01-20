@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Animated, TouchableOpacity, StyleSheet } from 'react-native';
+import { withTiming } from 'react-native-reanimated';
 
 interface ChallengeNotificationProps {
   message: string;
@@ -17,6 +18,7 @@ const ChallengeNotification: React.FC<ChallengeNotificationProps> = ({ message, 
     if (visible) {
       Animated.spring(slideAnim, {
         toValue: 0,
+        speed: 2,
         useNativeDriver: true,
       }).start();
 

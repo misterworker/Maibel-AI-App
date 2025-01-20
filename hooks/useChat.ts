@@ -4,10 +4,25 @@ import { botResponse, validateResponse } from "../utils/botApi";
 import * as ImagePicker from "expo-image-picker";
 import { initiateOnboardingFlow } from "./useOnboardingFlow";
 import { toggleChallengeCompleted } from "../utils/SecureStorage"
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { setChallengeProgress } from "@/utils/saveToSecureStorage";
 import { getChallengeProgress } from "@/utils/getFromStorage";
 import { useNotification } from "../context/NotificationContext";
+
+
+const createMessage = (text: string, userId: number, userName: string, userAvatar: any) => {
+  return {
+    _id: new Date().getTime(),
+    text,
+    createdAt: new Date(),
+    user: {
+      _id: userId,
+      name: userName,
+      avatar: userAvatar,
+    },
+  };
+};
+
 
 export const useChat = (
   userId: string,
@@ -47,8 +62,8 @@ export const useChat = (
   const handleSend = useCallback(
     (newMessages: IMessage[] = [], challengeType: string) => {
       const userMessage = newMessages[0];
-      markChallengeAsCompleted()
       if (userMessage && userMessage.text) {
+        markChallengeAsCompleted()
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
         
         if (challengeType == "none" || challengeType == "prog") {
@@ -65,37 +80,16 @@ export const useChat = (
                 return [updatedMessage, ...prevMessages.slice(1)];
               } else {
                 return [
-                  {
-                    _id: new Date().getTime(),
-                    text: "..." + chunk,
-                    createdAt: new Date(),
-                    user: {
-                      _id: 2,
-                      name: coachName,
-                      avatar: botAvatar,
-                    },
-                  },
+                  createMessage("..." + chunk, 2, coachName, botAvatar),
                   ...prevMessages,
                 ];
               }
             });
           }).then((botMessage) => {
-            setMessages((previousMessages) => {
-              const updatedMessages = [
-                {
-                  _id: new Date().getTime(),
-                  text: botMessage.text,
-                  createdAt: new Date(),
-                  user: {
-                    _id: 2,
-                    name: coachName,
-                    avatar: botAvatar,
-                  },
-                },
-                ...previousMessages.slice(1),
-              ];
-              return updatedMessages;
-            });
+            setMessages((previousMessages) => [
+              createMessage(botMessage.text, 2, coachName, botAvatar),
+              ...previousMessages.slice(1),
+            ]);
             setIsStreaming(false);
           });
         } else if (challengeType == "chat") {
@@ -107,12 +101,11 @@ export const useChat = (
           }
 
           if (replyPromiseRef.current) {
-            setIsStreaming(true)
+            setIsStreaming(true);
             replyPromiseRef.current(userMessage.text);
             replyPromiseRef.current = null;
           }
         }
-        
       }
     },
     [userId, coachId, coachName, botAvatar, personality, gender, coachBackgroundDesc]
@@ -149,24 +142,14 @@ export const useChat = (
           setIsStreaming(false)
           setMessages((previousMessages) =>
             GiftedChat.append(previousMessages, [
-              {
-                _id: new Date().getTime(),
-                text: "Please refrain from attempting to manipulate the bot.",
-                createdAt: new Date(),
-                user: { _id: 2, name: coachName, avatar: botAvatar },
-              },
+              createMessage("Manipulation Detected. Please refrain from deceptive tactics.", 2, coachName, botAvatar),
             ])
           );
         } else if (isNonsense) {
           setIsStreaming(false)
           setMessages((previousMessages) =>
             GiftedChat.append(previousMessages, [
-              {
-                _id: new Date().getTime(),
-                text: nudge,
-                createdAt: new Date(),
-                user: { _id: 2, name: coachName, avatar: botAvatar },
-              },
+              createMessage(nudge, 2, coachName, botAvatar),
             ])
           );
         } else {
@@ -223,30 +206,30 @@ export const useChat = (
 
       startOnboarding();
     }
-    else if (challenge.type === "prog") {
-      const startNewChallenge = async() => {
+    if (challenge.type === "prog") {
+      const startNewChallenge = async () => {
         setIsStreaming(true);
-        setTimeout(() => {
-          setMessages((prevMessages) => [
-            {
-              _id: new Date().getTime(),
-              text: challenge.desc,
-              createdAt: new Date(),
-              user: {
-                _id: 2,
-                name: coachName,
-                avatar: botAvatar,
-              },
-            },
-            ...prevMessages,
-          ]);
-          setIsStreaming(false);
-        }, 2000);
-      }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setMessages((prevMessages) => [
+          createMessage("Welcome Back!", 2, coachName, botAvatar),
+          ...prevMessages,
+        ]);
+        setIsStreaming(false)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setIsStreaming(true)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setMessages((prevMessages) => [
+          createMessage(challenge.desc, 2, coachName, botAvatar),
+          ...prevMessages,
+        ]);
+  
+        setIsStreaming(false);
+      };
+  
       startNewChallenge();
     }
   }, [challenge]);
-
+  
   return {
     messages,
     isStreaming,
