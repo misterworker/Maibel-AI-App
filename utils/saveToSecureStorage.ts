@@ -53,6 +53,14 @@ export const setUserID = async (userID: string) => {
   }
 };
 
+export const setUserInfo = async (userInfo: string) => {
+  try {
+    await saveToSecureStorage("userInfo", userInfo);
+  } catch (error) {
+    console.error("Error setting user info in secure storage", error);
+  }
+};
+
 //! Coach Details
 //? Only custom coaches should have gender, personalities and background attribute
 export const setCustomCoach = async (coach: any) => {
@@ -71,6 +79,4 @@ export const setCoachId = async (coachId: string) => {
     console.error("Error setting coach ID in secure storage", error);
   }
 };
-
-
 

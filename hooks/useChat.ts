@@ -5,9 +5,10 @@ import * as ImagePicker from "expo-image-picker";
 import { initiateOnboardingFlow } from "./useOnboardingFlow";
 import { toggleChallengeCompleted } from "../utils/SecureStorage"
 import { router, useFocusEffect } from "expo-router";
-import { setChallengeProgress } from "@/utils/saveToSecureStorage";
-import { getChallengeProgress } from "@/utils/getFromStorage";
+import { setChallengeProgress, setUserInfo } from "@/utils/saveToSecureStorage";
+import { getChallengeProgress, getUserInfo } from "@/utils/getFromStorage";
 import { useNotification } from "../context/NotificationContext";
+import Challenge from "../app/onboard/onboard_data";
 
 
 const createMessage = (text: string, userId: number, userName: string, userAvatar: any) => {
@@ -31,11 +32,14 @@ export const useChat = (
   botAvatar: any,
   personality: any,
   gender: any,
-  coachBackgroundDesc: any
+  coachBackgroundDesc: any,
 ) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [challenge, setChallenge] = useState({ id: 0, type: "none", title: "none", desc: "none", qns: 0});
+  const [challengeDesc, setChallengeDesc] = useState("");
+
+  console.log("Cur Desc", challengeDesc)
 
   const readyPromiseRef = useRef<(() => void) | null>(null);
   const replyPromiseRef = useRef<((reply: string) => void) | null>(null);
@@ -60,35 +64,26 @@ export const useChat = (
   
 
   const handleSend = useCallback(
-    (newMessages: IMessage[] = [], challengeType: string) => {
+    (newMessages: IMessage[] = [], challenge: Challenge) => {
       const userMessage = newMessages[0];
       if (userMessage && userMessage.text) {
-        markChallengeAsCompleted()
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-        
+        const challengeType = challenge.type
         if (challengeType == "none" || challengeType == "prog") {
+          console.log("Message sent")
           setIsStreaming(true);
-
-          botResponse(userMessage.text, userId, coachId, personality, gender, coachBackgroundDesc, (chunk) => {
-            setMessages((prevMessages) => {
-              const lastMessage = prevMessages[0];
-              if (lastMessage && lastMessage.user._id === 2 && lastMessage.text.startsWith("...")) {
-                const updatedMessage = {
-                  ...lastMessage,
-                  text: lastMessage.text + chunk,
-                };
-                return [updatedMessage, ...prevMessages.slice(1)];
-              } else {
-                return [
-                  createMessage("..." + chunk, 2, coachName, botAvatar),
-                  ...prevMessages,
-                ];
-              }
-            });
-          }).then((botMessage) => {
-            setMessages((previousMessages) => [
+          botResponse(userMessage.text, userId, coachId, personality, coachName, gender, coachBackgroundDesc, challengeDesc)
+          .then((botMessage) => {
+            setMessages((prevMessages) => [
               createMessage(botMessage.text, 2, coachName, botAvatar),
-              ...previousMessages.slice(1),
+              ...prevMessages,
+            ]);
+            setIsStreaming(false);
+          })
+          .catch((error) => {
+            setMessages((prevMessages) => [
+              createMessage(`Error: ${error.message}`, 2, coachName, botAvatar),
+              ...prevMessages,
             ]);
             setIsStreaming(false);
           });
@@ -121,6 +116,24 @@ export const useChat = (
       });
     });
   };
+
+  const saveUserInfo = async (question: string, value: string) => {
+    try {
+      const existingData = await getUserInfo();
+      const parsedData = existingData ? JSON.parse(existingData) : {};
+  
+      if (typeof parsedData !== "object" || Array.isArray(parsedData)) {
+        throw new Error("Stored user info is not a valid object.");
+      }
+  
+      const updatedData = { ...parsedData, [question]: value };
+      await setUserInfo(JSON.stringify(updatedData));
+      console.log("User info updated:", updatedData);
+    } catch (error) {
+      console.error("Error saving user info:", error);
+    }
+  };
+  
   const waitForReady = () => {
     return new Promise<void>((resolve) => {
       readyPromiseRef.current = resolve;
@@ -155,6 +168,7 @@ export const useChat = (
         } else {
           // Valid response received, break the loop and resolve the reply
           incrementChallengeProgress()
+          await saveUserInfo(question, userReply);
           validResponse = true;
           resolve(userReply);  // Return the valid reply
         }
@@ -219,7 +233,7 @@ export const useChat = (
         setIsStreaming(true)
         await new Promise(resolve => setTimeout(resolve, 2000));
         setMessages((prevMessages) => [
-          createMessage(challenge.desc, 2, coachName, botAvatar),
+          createMessage(challengeDesc, 2, coachName, botAvatar),
           ...prevMessages,
         ]);
   
@@ -228,13 +242,14 @@ export const useChat = (
   
       startNewChallenge();
     }
-  }, [challenge]);
+  }, [challengeDesc]);
   
   return {
     messages,
     isStreaming,
     challenge,
     setChallenge,
+    setChallengeDesc,
     handleSend,
     handleSendImage,
   };

@@ -4,7 +4,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { themeStyles } from "../../context/themeStyles";
 import { View, StyleSheet, Text, ImageBackground, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getCoach, getOnboardDay, getUserID, getIsCompleted } from '../../utils/getFromStorage';
+import { getCoach, getOnboardDay, getUserID, getIsCompleted, getRecommendation } from '../../utils/getFromStorage';
 import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
@@ -30,19 +30,18 @@ export default function Chat() {
 
   const botAvatar = require("../../assets/images/Stan.jpeg");
 
-  const { messages, isStreaming, challenge, setChallenge, handleSend, handleSendImage } = useChat(
+  const { messages, isStreaming, challenge, setChallenge, setChallengeDesc, handleSend, handleSendImage } = useChat(
     userID,
     coachId,
     coachName, 
     botAvatar, 
     personality,
     gender,
-    coachBackground
+    coachBackground,
   );
 
   useEffect(() => {
     const fetchAndSetOnboardDay = async () => {
-      console.log("Fetch and Set onboard day (Chat.tsx)")
       const onboardDay = await getOnboardDay();
       setOnboardDay(onboardDay);
       await setCoachDetails();
@@ -53,7 +52,6 @@ export default function Chat() {
 
   useEffect(() => {
     const fetchAndSetDetails = async () => {
-      console.log("Set Details (Chat.tsx)")
       await setCoachDetails();
       await setChallengeDetails();
     };
@@ -108,7 +106,11 @@ export default function Chat() {
   
       if (currentChallenge) {
         setChallenge(currentChallenge as any);
-        console.log("Current Challenge (Chat.tsx): ", currentChallenge)
+        console.log("Chat.tsx setting challenge: ", currentChallenge)
+        const recommendation = await getRecommendation();
+        const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recommendation);
+        console.log("Chat.tsx update challenge desc: ", updatedChallengeDesc)
+        setChallengeDesc(updatedChallengeDesc)
       }
     }
   };
@@ -152,13 +154,12 @@ export default function Chat() {
   useFocusEffect(
     useCallback(() => {
       const modifyOnboardDay = async () => {
-        console.log("Fetch and Set onboard day (Chat.tsx)");
         const onboardDay = await getOnboardDay();
         setOnboardDay(onboardDay);
         await setCoachDetails();
       };
-  
       modifyOnboardDay();
+
     }, [])
   );
 
@@ -174,7 +175,7 @@ export default function Chat() {
           <GiftedChat
             messages={messages}
             onSend={(messages) => {
-              handleSend(messages, challenge.type)}}
+              handleSend(messages, challenge)}}
             user={{ _id: 1, name: "User" }}
             placeholder="Type your message..."
             showUserAvatar={true}

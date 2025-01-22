@@ -74,5 +74,5 @@ export default interface Challenge {
 
 export const challenges: Challenge[] = [
   { id: 1, type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!", qns: 5},
-  { id: 2, type: "prog", title: "Drink Water", desc: "Drink 1 liter of water, and update me when you're done!"}
+  { id: 2, type: "prog", title: "Drink Water", desc: "Drink {x} of water. Update me whenever you make progress, Good Luck!"}
 ]

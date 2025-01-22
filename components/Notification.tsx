@@ -19,6 +19,7 @@ const ChallengeNotification: React.FC<ChallengeNotificationProps> = ({ message, 
       Animated.spring(slideAnim, {
         toValue: 0,
         speed: 2,
+        bounciness: 0,
         useNativeDriver: true,
       }).start();
 

@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
+import { Modal, Text, Button, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { getOnboardDay } from '@/utils/getFromStorage';
-import { setOnboardDay, setIsCompleted, setChallengeProgress } from '@/utils/saveToSecureStorage';
-import React from 'react';
-import { Modal, Text, Button, View, StyleSheet } from 'react-native';
+import { setOnboardDay, setIsCompleted, setChallengeProgress, setRecomendation } from '@/utils/saveToSecureStorage';
+import { recommendationResponse } from '../utils/botApi';
+import Challenge, { challenges } from '../app/onboard/onboard_data';
 
 interface CongratulationModalProps {
   isVisible: boolean;
@@ -9,20 +11,51 @@ interface CongratulationModalProps {
 }
 
 const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, onClose }) => {
+  const [loading, setLoading] = useState(false);
+
   const resetChallenge = async () => {
-    const onboardDay = await getOnboardDay();
-    await setIsCompleted(false);
-    await setOnboardDay(onboardDay + 1);
-    await setChallengeProgress("0")
-    onClose();
-  }
+    setLoading(true);
+
+    try {
+      const onboardDay = await getOnboardDay();
+      const currentChallenge = challenges.find((ch) => ch.id === onboardDay + 1) || { id: 0, type: "none", title: "none", desc: "none", qns: 0};
+      const challengeResponse = await recommendationResponse(currentChallenge.desc);
+
+      console.log("CongratulationModal", challengeResponse)
+      if (challengeResponse.recommendation && challengeResponse.unit) {
+        const combinedData = `${challengeResponse.recommendation} (${challengeResponse.unit})`;
+        await setRecomendation(combinedData)
+        console.log("Saved recommendation:", combinedData);
+      }
+
+      // Reset challenge state
+      await setIsCompleted(false);
+      await setOnboardDay(onboardDay + 1);
+      await setChallengeProgress("0");
+    } catch (error) {
+      console.error("Error resetting challenge or saving recommendation:", error);
+    } finally {
+      setLoading(false); // Hide the loading indicator
+      onClose();
+    }
+  };
+
   return (
     <Modal visible={isVisible} transparent={true} animationType="slide">
       <View style={styles.modalBackground}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>Congratulations!</Text>
-          <Text style={styles.message}>You've completed the challenge!</Text>
-          <Button title="Awesome" onPress={resetChallenge} />
+          {loading ? (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color="#0000ff" />
+              <Text>Loading...</Text>
+            </View>
+          ) : (
+            <>
+              <Text style={styles.title}>Congratulations!</Text>
+              <Text style={styles.message}>You've completed the challenge!</Text>
+              <Button title="Awesome" onPress={resetChallenge} />
+            </>
+          )}
         </View>
       </View>
     </Modal>
@@ -51,6 +84,11 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 16,
     marginBottom: 20,
+  },
+  loadingOverlay: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

@@ -30,6 +30,7 @@ export function useChallengeData() {
     setCompletedChallenges(completedChallengesList);
 
     if (currentChallenge) {
+      const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recommendation);
       if (completed && challengeProgress === 1) {
         setCompletedChallenges((prevChallenges) => {
           if (!prevChallenges.some(ch => ch.id === currentChallenge.id)) {
@@ -43,7 +44,7 @@ export function useChallengeData() {
           id: currentChallenge.id,
           title: currentChallenge.title,
           progress: challengeProgress,
-          desc: currentChallenge.desc,
+          desc: updatedChallengeDesc,
           type: currentChallenge.type
         });
       }

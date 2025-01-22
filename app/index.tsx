@@ -43,9 +43,11 @@ export default function Onboarding() {
   useEffect(() => {
     const checkDayAndRedirect = async () => {
       try {
+        removeFromSecureStorage("userInfo")
         removeFromSecureStorage("isCompleted")
         removeFromSecureStorage("onboardDay")
         removeFromSecureStorage("challengeProgress")
+        removeFromSecureStorage("summary")
 
         const onboardDay = await getFromSecureStorage("onboardDay");
         const userID = await getFromSecureStorage("userID");

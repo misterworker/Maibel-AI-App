@@ -15,19 +15,24 @@ export const getIsCompleted = async() => {
 }
 
 export const getRecommendation = async() => {
-  const recommendation = await getFromSecureStorage("recommendation")
-  return recommendation as string
+  const recommendation = await getFromSecureStorage("recommendation") as string
+  return recommendation
 }
 
 export const getChallengeProgress = async() => {
-  const challengeProgress = await getFromSecureStorage("challengeProgress")
-  return challengeProgress as string
+  const challengeProgress = await getFromSecureStorage("challengeProgress") as string
+  return challengeProgress
 }
 
 //! User Information
 export const getUserID = async() => {
   const userID = await getFromSecureStorage("userID")
   return (userID)
+}
+
+export const getUserInfo = async() => {
+  const userInfo = await getFromSecureStorage("userInfo")
+  return (userInfo)
 }
 
 //! Coach Details
@@ -43,3 +48,4 @@ export const getCoach = async () => {
     gender: coach.gender,
   };
 };
+

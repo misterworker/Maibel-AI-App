@@ -12,7 +12,6 @@ export const initializeBackgroundTask = () => {
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      console.log(`Is Running: Hours ${hours}, Minutes ${minutes}`);
       if (hours === 0 && minutes < 0) {
         const isComplete = await getIsCompleted();
         if (isComplete) {
