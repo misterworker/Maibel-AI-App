@@ -14,9 +14,14 @@ export const getIsCompleted = async() => {
   }
 }
 
-export const getRecommendation = async() => {
-  const recommendation = await getFromSecureStorage("recommendation") as string
-  return recommendation
+export const getRecommendationVal = async() => {
+  const recommendationVal = await getFromSecureStorage("recVal") as string
+  return recommendationVal
+}
+
+export const getRecommendationUnit = async() => {
+  const recommendationUnit = await getFromSecureStorage("recUnit") as string
+  return recommendationUnit
 }
 
 export const getChallengeProgress = async() => {

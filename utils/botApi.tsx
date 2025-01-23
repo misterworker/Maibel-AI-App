@@ -1,5 +1,5 @@
 import { fetch } from 'expo/fetch';
-import { getChallengeProgress, getIsCompleted, getUserInfo } from './getFromStorage';
+import { getChallengeProgress, getIsCompleted, getUserInfo, getRecommendationUnit, getRecommendationVal } from './getFromStorage';
 import { setChallengeProgress, setIsCompleted } from './saveToSecureStorage';
 
 const callbot_url = process.env.EXPO_PUBLIC_CALLBOT_URL || ""
@@ -18,11 +18,12 @@ export const botResponse = async (
   const fetchStuff = async () => {
     const isCompleted = await getIsCompleted()
     const challengeProgress = await getChallengeProgress()
-    console.log(challengeProgress)
-    return [isCompleted, challengeProgress]
+    const recVal = await getRecommendationVal();
+    const recUnit = await getRecommendationUnit();
+    return [isCompleted, challengeProgress, recVal, recUnit]
   };
   try {
-    const [isCompleted, challengeProgress] = await fetchStuff();
+    const [isCompleted, challengeProgress, recVal, recUnit] = await fetchStuff();
     console.log("Challenge Progress: ", challengeProgress)
 
     const response = await fetch("https://callbot-fastapi-78306345447.asia-southeast1.run.app/chat", {
@@ -41,6 +42,8 @@ export const botResponse = async (
         background: background,
         isComplete: isCompleted,
         challengeProgress: challengeProgress,
+        recVal: recVal,
+        recUnit: recUnit,
       }),
     });
 
@@ -50,12 +53,17 @@ export const botResponse = async (
     }
 
     const responseData = await response.json();
-    console.log("response data: ", responseData)
-    const botMessage = responseData.response;
-    const progressAmt = responseData.progressAmt;
 
-    await setChallengeProgress(progressAmt + challengeProgress);
-    console.log(progressAmt + challengeProgress)
+    const botMessage = responseData.response;
+    const finalProg = String(responseData.finalProg);
+    console.log("response data: ", responseData)
+    if (finalProg !== "NA"){
+      console.log("final prog: ", finalProg)
+      await setChallengeProgress(finalProg);
+    }
+    console.log("final prog2: ", finalProg)
+    
+
 
     return {
       id: Date.now().toString(),
@@ -133,7 +141,6 @@ export const recommendationResponse = async (
 ) => {
   const fetchStuff = async () => {
     const userInfo = await getUserInfo()
-    console.log("getting user info: ", userInfo)
     return userInfo
   };
   try {
@@ -145,7 +152,7 @@ export const recommendationResponse = async (
       },
       body: JSON.stringify({
         challenge: challenge,
-        userData: userInfo
+        userData: userInfo,
       }),
     });
 
@@ -159,8 +166,8 @@ export const recommendationResponse = async (
     console.log("Response Data Recommendation: ", responseData)
 
     return {
-      recommendation: responseData.recommendation,
-      unit: responseData.unit,
+      recommendation: String(responseData.recommendation),
+      unit: String(responseData.unit),
     };
   } catch (error) {
     if (error instanceof Error) {

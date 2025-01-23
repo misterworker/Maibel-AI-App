@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Challenge, { challenges } from '../app/onboard/onboard_data';
-import { getOnboardDay, getIsCompleted, getRecommendation, getChallengeProgress } from '../utils/getFromStorage';
+import { getOnboardDay, getIsCompleted, getRecommendationVal, getRecommendationUnit, getChallengeProgress } from '../utils/getFromStorage';
 import { useFocusEffect } from '@react-navigation/native';
 
 export function useChallengeData() {
@@ -9,7 +9,6 @@ export function useChallengeData() {
   const [completedChallenges, setCompletedChallenges] = useState<Challenge[]>([]);
 
   const fetchData = useCallback(async () => {
-    const recommendation = await getRecommendation();
     const onboardDay = await getOnboardDay();
     const completed = await getIsCompleted();
     let challengeProgress = await getChallengeProgress() as any;
@@ -28,6 +27,10 @@ export function useChallengeData() {
 
     // Reset and update the completed challenges to avoid duplication
     setCompletedChallenges(completedChallengesList);
+
+    const recVal = await getRecommendationVal();
+    const recUnit = await getRecommendationUnit();
+    const recommendation = `${recVal} ${recUnit}`
 
     if (currentChallenge) {
       const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recommendation);

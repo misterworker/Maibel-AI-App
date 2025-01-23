@@ -26,12 +26,20 @@ export const setOnboardDate = async (onboardDate: string) => {
 };
 
 //? Recommendation for current challenge based on user profile
-export const setRecomendation = async(recommendation: string) => {
-  //* TODO Recommendation Logic here
+export const setRecomendationVal = async(recVal: string) => {
   try {
-    await saveToSecureStorage("recommendation", recommendation);
+    await saveToSecureStorage("recVal", recVal);
   } catch (error) {
-    console.error("Error setting recommendation in secure storage", error);
+    console.error("Error setting recommendation value in secure storage", error);
+  }
+}
+
+//? Recommendation for current challenge based on user profile
+export const setRecomendationUnit = async(recUnit: string) => {
+  try {
+    await saveToSecureStorage("recUnit", recUnit);
+  } catch (error) {
+    console.error("Error setting 4 unit in secure storage", error);
   }
 }
 

@@ -39,8 +39,6 @@ export const useChat = (
   const [challenge, setChallenge] = useState({ id: 0, type: "none", title: "none", desc: "none", qns: 0});
   const [challengeDesc, setChallengeDesc] = useState("");
 
-  console.log("Cur Desc", challengeDesc)
-
   const readyPromiseRef = useRef<(() => void) | null>(null);
   const replyPromiseRef = useRef<((reply: string) => void) | null>(null);
 
@@ -70,7 +68,6 @@ export const useChat = (
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
         const challengeType = challenge.type
         if (challengeType == "none" || challengeType == "prog") {
-          console.log("Message sent")
           setIsStreaming(true);
           botResponse(userMessage.text, userId, coachId, personality, coachName, gender, coachBackgroundDesc, challengeDesc)
           .then((botMessage) => {

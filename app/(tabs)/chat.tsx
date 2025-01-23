@@ -4,7 +4,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { themeStyles } from "../../context/themeStyles";
 import { View, StyleSheet, Text, ImageBackground, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getCoach, getOnboardDay, getUserID, getIsCompleted, getRecommendation } from '../../utils/getFromStorage';
+import { getCoach, getOnboardDay, getUserID, getIsCompleted, getRecommendationVal, getRecommendationUnit } from '../../utils/getFromStorage';
 import { useChat } from '../../hooks/useChat';
 import { Header } from "../../components/Header";
 import { SendButton } from "../../components/SendButton";
@@ -106,8 +106,9 @@ export default function Chat() {
   
       if (currentChallenge) {
         setChallenge(currentChallenge as any);
-        console.log("Chat.tsx setting challenge: ", currentChallenge)
-        const recommendation = await getRecommendation();
+        const recVal = await getRecommendationVal();
+        const recUnit = await getRecommendationUnit();
+        const recommendation = `${recVal} ${recUnit}`
         const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recommendation);
         console.log("Chat.tsx update challenge desc: ", updatedChallengeDesc)
         setChallengeDesc(updatedChallengeDesc)
@@ -175,7 +176,10 @@ export default function Chat() {
           <GiftedChat
             messages={messages}
             onSend={(messages) => {
-              handleSend(messages, challenge)}}
+              if (!isStreaming) {
+                handleSend(messages, challenge);
+              }
+            }}
             user={{ _id: 1, name: "User" }}
             placeholder="Type your message..."
             showUserAvatar={true}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Text, Button, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { getOnboardDay } from '@/utils/getFromStorage';
-import { setOnboardDay, setIsCompleted, setChallengeProgress, setRecomendation } from '@/utils/saveToSecureStorage';
+import { setOnboardDay, setIsCompleted, setChallengeProgress, setRecomendationVal, setRecomendationUnit } from '@/utils/saveToSecureStorage';
 import { recommendationResponse } from '../utils/botApi';
 import Challenge, { challenges } from '../app/onboard/onboard_data';
 
@@ -21,11 +21,9 @@ const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, on
       const currentChallenge = challenges.find((ch) => ch.id === onboardDay + 1) || { id: 0, type: "none", title: "none", desc: "none", qns: 0};
       const challengeResponse = await recommendationResponse(currentChallenge.desc);
 
-      console.log("CongratulationModal", challengeResponse)
       if (challengeResponse.recommendation && challengeResponse.unit) {
-        const combinedData = `${challengeResponse.recommendation} (${challengeResponse.unit})`;
-        await setRecomendation(combinedData)
-        console.log("Saved recommendation:", combinedData);
+        await setRecomendationVal(challengeResponse.recommendation)
+        await setRecomendationUnit(challengeResponse.unit)
       }
 
       // Reset challenge state
