@@ -131,7 +131,6 @@ export const useChat = (
   
       const updatedData = { ...parsedData, [question]: value };
       await setUserInfo(JSON.stringify(updatedData));
-      console.log("User info updated:", updatedData);
     } catch (error) {
       console.error("Error saving user info:", error);
     }

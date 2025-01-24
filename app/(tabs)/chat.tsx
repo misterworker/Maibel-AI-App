@@ -17,6 +17,7 @@ import 'react-native-get-random-values';
 
 
 export default function Chat() {
+  const maxCharacters = 1000;
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
 
@@ -27,8 +28,7 @@ export default function Chat() {
   const [coachId, setCoachId] = useState("");
   const [userID, setUserId] = useState("");
   const [onboardDay, setOnboardDay] = useState(0);
-
-  const botAvatar = require("../../assets/images/Stan.jpeg");
+  const [botAvatar, setBotAvatar] = useState(require("../../assets/images/chat/custom_coach_avatar.jpg"));
 
   const { messages, isStreaming, challenge, setChallenge, setChallengeDesc, handleSend, handleSendImage } = useChat(
     userID,
@@ -75,18 +75,22 @@ export default function Chat() {
       case "male_coach":
         background = require("../../assets/images/chat/chat_male.jpg");
         setCoachName("Ethain");
+        setBotAvatar(require("../../assets/images/chat/male_avatar.jpg"))
         break;
       case "female_coach":
         background = require("../../assets/images/chat/chat_female.jpg");
         setCoachName("Maibel");
+        setBotAvatar(require("../../assets/images/chat/female_avatar.jpg"))
         break;
       case "custom_coach":
-        background = require("../../assets/images/onboard/Custom_Coach.png");
+        background = require("../../assets/images/chat/chat_custom_coach.jpg");
         setCoachName(coachName);
+        setBotAvatar(require("../../assets/images/chat/custom_coach_avatar.jpg"))
         break;
       default:
-        background = require("../../assets/images/onboard/Custom_Coach.png");
+        background = require("../../assets/images/chat/chat_custom_coach.jpg");
         setCoachName("Coach");
+        setBotAvatar(require("../../assets/images/chat/custom_coach_avatar.jpg"))
     }
   
     setPersonality(Array.isArray(personalities) ? personalities.join(", ") : personalities || "");
@@ -109,7 +113,6 @@ export default function Chat() {
         const recVal = await getRecommendationVal();
         const recUnit = await getRecommendationUnit();
         const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recVal).replace('{y}', recUnit);
-        console.log("Chat.tsx update challenge desc: ", updatedChallengeDesc)
         setChallengeDesc(updatedChallengeDesc)
       }
     }
@@ -173,6 +176,7 @@ export default function Chat() {
         >
           <Header coachName={coachName} botAvatar={botAvatar} />
           <GiftedChat
+            maxInputLength={maxCharacters}
             messages={messages}
             onSend={(messages) => {
               if (!isStreaming) {
@@ -188,9 +192,14 @@ export default function Chat() {
             renderActions={() => <SendButton handleSendImage={handleSendImage} />}
             renderInputToolbar={(props) => <InputToolbar {...props} containerStyle={styles.inputContainer} />}
             renderSend={(props) => (
-              <Send {...props} containerStyle={styles.sendContainer}>
-                <View style={styles.sendButton}>
-                  <Ionicons name="send" size={18} color="#fff" />
+              <Send {...props} containerStyle={styles.sendContainer} disabled={isStreaming}>
+                <View
+                  style={[
+                    styles.sendButton,
+                    isStreaming && { backgroundColor: "#ccc" },
+                  ]}
+                >
+                  <Ionicons name="send" size={18} color={isStreaming ? "#888" : "#fff"} />
                 </View>
               </Send>
             )}

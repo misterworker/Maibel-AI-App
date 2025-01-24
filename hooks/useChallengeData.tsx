@@ -14,9 +14,6 @@ export function useChallengeData() {
     let challengeProgress = await getChallengeProgress() as any;
     challengeProgress = Number(challengeProgress);
 
-    console.log("Challenge Progress: ", challengeProgress);
-    console.log("Completed Challenges (before state change): ", completedChallenges);
-
     setIsCompleted(completed);
 
     // Find the current challenge for the given onboardDay

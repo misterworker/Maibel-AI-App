@@ -75,7 +75,6 @@ export default function ProfilePage() {
   }, [isCompleted, setModalWithDelay]);
 
   const handleModalClose = (onboardDay: string) => {
-    console.log(`Modal closed, onboardDay is now: ${onboardDay}`);
     hideModal();
 
     router.push(`../onboard/day${onboardDay}_1`);
