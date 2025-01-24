@@ -20,7 +20,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
-      initializeBackgroundTask();
+      // initializeBackgroundTask();
 
       Notifications.setNotificationHandler({
         handleNotification: async () => ({
@@ -91,7 +91,7 @@ export default function Onboarding() {
         <View style={[styles.buttonContainer, { top: screenHeight * 0.8 }]}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push("./onboard/initOnboard_1_day1")}
+            onPress={() => router.push("./onboard/day1_1")}
           >
             <LinearGradient
               colors={["#6A0DAD", "#FF69B4"]}

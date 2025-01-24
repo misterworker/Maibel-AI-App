@@ -81,11 +81,11 @@ export default function Chat() {
         setCoachName("Maibel");
         break;
       case "custom_coach":
-        background = require("../../assets/images/onboard/Custom_Coach.jpeg");
+        background = require("../../assets/images/onboard/Custom_Coach.png");
         setCoachName(coachName);
         break;
       default:
-        background = require("../../assets/images/onboard/Custom_Coach.jpeg");
+        background = require("../../assets/images/onboard/Custom_Coach.png");
         setCoachName("Coach");
     }
   
@@ -108,8 +108,7 @@ export default function Chat() {
         setChallenge(currentChallenge as any);
         const recVal = await getRecommendationVal();
         const recUnit = await getRecommendationUnit();
-        const recommendation = `${recVal} ${recUnit}`
-        const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recommendation);
+        const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recVal).replace('{y}', recUnit);
         console.log("Chat.tsx update challenge desc: ", updatedChallengeDesc)
         setChallengeDesc(updatedChallengeDesc)
       }

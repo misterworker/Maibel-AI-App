@@ -30,11 +30,10 @@ export function useChallengeData() {
 
     const recVal = await getRecommendationVal();
     const recUnit = await getRecommendationUnit();
-    const recommendation = `${recVal} ${recUnit}`
 
     if (currentChallenge) {
-      const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recommendation);
-      if (completed && challengeProgress === 1) {
+      const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recVal).replace('{y}', recUnit);
+      if (completed && challengeProgress >= 1) {
         setCompletedChallenges((prevChallenges) => {
           if (!prevChallenges.some(ch => ch.id === currentChallenge.id)) {
             return [...prevChallenges, currentChallenge];

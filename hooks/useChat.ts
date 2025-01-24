@@ -71,6 +71,12 @@ export const useChat = (
           setIsStreaming(true);
           botResponse(userMessage.text, userId, coachId, personality, coachName, gender, coachBackgroundDesc, challengeDesc)
           .then((botMessage) => {
+            const finalProg = botMessage.finalProg || "NA"
+            if (finalProg !== "NA") {
+              if (+finalProg >= 1) {
+                markChallengeAsCompleted();
+              }
+            }
             setMessages((prevMessages) => [
               createMessage(botMessage.text, 2, coachName, botAvatar),
               ...prevMessages,

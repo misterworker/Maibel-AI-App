@@ -1,9 +1,14 @@
 import { fetch } from 'expo/fetch';
 import { getChallengeProgress, getIsCompleted, getUserInfo, getRecommendationUnit, getRecommendationVal } from './getFromStorage';
 import { setChallengeProgress, setIsCompleted } from './saveToSecureStorage';
+import { router, useFocusEffect } from "expo-router";
 
 const callbot_url = process.env.EXPO_PUBLIC_CALLBOT_URL || ""
 const validationbot_url = process.env.EXPO_PUBLIC_VALIDATIONBOT_URL || ""
+
+const markChallengeAsCompleted = async () => {
+  setIsCompleted(true);
+};
 
 export const botResponse = async (
   userMessage: string,
@@ -54,21 +59,18 @@ export const botResponse = async (
 
     const responseData = await response.json();
 
-    const botMessage = responseData.response;
-    const finalProg = String(responseData.finalProg);
-    console.log("response data: ", responseData)
-    if (finalProg !== "NA"){
-      console.log("final prog: ", finalProg)
-      await setChallengeProgress(finalProg);
+    const botMessage = String(responseData.response);
+    const finalProgStr = String(responseData.finalProg);
+    console.log("Response Data", responseData)
+    if (finalProgStr !== "NA"){
+      await setChallengeProgress(finalProgStr);
     }
-    console.log("final prog2: ", finalProg)
-    
-
 
     return {
       id: Date.now().toString(),
       sender: 'bot',
       text: botMessage,
+      finalProg: finalProgStr,
     };
   } catch (error) {
     if (error instanceof Error) {

@@ -9,8 +9,11 @@ import { useChallengeData } from '../../hooks/useChallengeData';
 import Challenge from '../onboard/onboard_data';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CongratulationModal from '@/components/CongratulationModal';
+import { router } from 'expo-router';
 
 function ChallengeCard({ challenge, currentTheme, isCompleted }: { challenge: Challenge, currentTheme: any, isCompleted?: boolean }) {
+  const challengeProg = parseFloat(((challenge.progress || 0) * 100).toFixed(2))
+  const challengeProgPercent = parseFloat((challenge.progress || 0).toFixed(2))
   return (
     <View
       style={[
@@ -45,13 +48,13 @@ function ChallengeCard({ challenge, currentTheme, isCompleted }: { challenge: Ch
       </Text>
 
       <ProgressBar
-        key={challenge.progress}
-        progress={isCompleted ? 1 : challenge.progress}
+        key={challengeProgPercent}
+        progress={isCompleted ? 1 : challengeProgPercent}
         color={isCompleted ? currentTheme.success : currentTheme.primary}
         style={styles.progressBar}
       />
       <Text style={[styles.progressText, { color: currentTheme.subtext }]}>
-        {isCompleted ? 'Completed' : Math.round((challenge.progress || 0) * 100) + '% Completed'}
+        {isCompleted ? 'Completed' : challengeProg + '% Completed'}
       </Text>
     </View>
   );
@@ -71,9 +74,11 @@ export default function ProfilePage() {
     prevIsCompletedRef.current = isCompleted;
   }, [isCompleted, setModalWithDelay]);
 
-  const handleModalClose = () => {
+  const handleModalClose = (onboardDay: string) => {
+    console.log(`Modal closed, onboardDay is now: ${onboardDay}`);
     hideModal();
-    fetchData();
+
+    router.push(`../onboard/day${onboardDay}_1`);
   };
 
   if (!challenge && !completedChallenges) {

@@ -1,36 +1,112 @@
 import { initiateOnboardingFlow } from "@/hooks/useOnboardingFlow";
 
 export const initOnboardStoryData = {
-  initOnboard_1_day1: {
-    image: require('../../assets/images/onboard/story_onboard_1.jpg'),
+  day1_1: {
+    image: require('../../assets/images/onboard/stories/Day1/1.jpg'),
     buttons: [
-      { label: "Read The Letter", link: "/onboard/initOnboard_2_day1", marginBottom: 25, style: "gradient" },
+      { label: "Read The Letter", link: "/onboard/day1_2", marginBottom: 10, style: "gradient" },
     ],
   },
-  initOnboard_2_day1: {
-    image: require('../../assets/images/onboard/story_onboard_2.jpg'),
+  day1_2: {
+    image: require('../../assets/images/onboard/stories/Day1/2.jpg'),
     buttons: [
-      { label: "What's in Store for me?", link: "/onboard/initOnboard_3_day1",  marginBottom: 20, style: "gradient" },
-      { label: "Hold up, what the heck?!", link: "/onboard/initOnboard_3_day1",  marginBottom: 25, style: "plain" },
+      { label: "What's in Store for me?", link: "/onboard/day1_3",  marginBottom: 10, style: "gradient" },
+      { label: "Hold up, what the heck?!", link: "/onboard/day1_3",  marginBottom: 10, style: "plain" },
     ],
   },
-  initOnboard_3_day1: {
-    image: require('../../assets/images/onboard/story_onboard_3.jpg'),
+  day1_3: {
+    image: require('../../assets/images/onboard/stories/Day1/3.jpg'),
     buttons: [
-      { label: "Yes, I accept", link: "/onboard/initOnboard_4_day1",  marginBottom: 15, style: "gradient" },
-      { label: "I think I'll pass", link: "/onboard/initOnboard_4_day1",  marginBottom: 25, style: "plain" },
+      { label: "Yes, I accept", link: "/onboard/day1_4",  marginBottom: 10, style: "gradient" },
+      { label: "I think I'll pass", link: "/onboard/day1_4",  marginBottom: 10, style: "plain" },
     ],
   },
-  initOnboard_4_day1: {
-    image: require('../../assets/images/onboard/story_onboard_4.jpg'),
+  day1_4: {
+    image: require('../../assets/images/onboard/stories/Day1/4.jpg'),
     buttons: [
-      { label: "Build AI companion", link: "/onboard/initOnboard_5_day1",  marginBottom: 25, style: "gradient" },
+      { label: "Build AI companion", link: "/onboard/day1_5",  marginBottom: 10, style: "gradient" },
     ],
   },
-  initOnboard_5_day1: {
-    image: require('../../assets/images/onboard/choose-ai.jpg'),
+  day1_5: {
+    image: require('../../assets/images/onboard/stories/Day1/choose-ai.jpg'),
     buttons: [
-      { label: "Let's Go!", link: "/onboard/choose-ai",  marginBottom: 50, style: "gradient" },
+      { label: "Let's Go!", link: "/onboard/choose-ai",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day2_1: {
+    image: require('../../assets/images/onboard/stories/Day2/1.jpg'),
+    buttons: [
+      { label: "Is my cousin involved in this?", link: "/onboard/day2_2",  marginBottom: 10, style: "gradient" },
+      { label: "What am I missing here?", link: "/onboard/day2_2",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day2_2: {
+    image: require('../../assets/images/onboard/stories/Day2/2.jpg'),
+    buttons: [
+      { label: "Nobody saw it coming.", link: "/onboard/day2_3",  marginBottom: 10, style: "gradient" },
+      { label: "I can't recall what happened.", link: "/onboard/day2_3",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day2_3: {
+    image: require('../../assets/images/onboard/stories/Day2/3.jpg'),
+    buttons: [
+      { label: "How did it happen?", link: "/onboard/day2_4",  marginBottom: 10, style: "gradient" },
+      { label: "Why did she leave me?", link: "/onboard/day2_4",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day2_4: {
+    image: require('../../assets/images/onboard/stories/Day2/4.jpg'),
+    buttons: [
+      { label: "This is why I kept to myself.", link: "/onboard/day2_5",  marginBottom: 10, style: "gradient" },
+      { label: "Life has never been the same.", link: "/onboard/day2_5",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day2_5: {
+    image: require('../../assets/images/onboard/stories/Day2/5.jpg'),
+    buttons: [
+      { label: "This is why I distanced myself.", link: "/onboard/day2_6",  marginBottom: 10, style: "gradient" },
+      { label: "Life has never been the same.", link: "/onboard/day2_6",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day2_6: {
+    image: require('../../assets/images/onboard/stories/Day2/6.jpg'),
+    buttons: [
+      { label: "You know what, let's do this.", link: "/(tabs)/chat",  marginBottom: 10, style: "gradient" },
+      { label: "I'm not ready for this.", link: "/(tabs)/chat",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day3_1: {
+    image: require('../../assets/images/onboard/stories/Day3/1.jpg'),
+    buttons: [
+      { label: "If only they knew the truth", link: "/onboard/day3_2",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day3_2: {
+    image: require('../../assets/images/onboard/stories/Day3/2.jpg'),
+    buttons: [
+      { label: "Why am I involved now?", link: "/onboard/day3_3",  marginBottom: 10, style: "gradient" },
+      { label: "I will never contact her again.", link: "/onboard/day3_3",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day3_3: {
+    image: require('../../assets/images/onboard/stories/Day3/3.jpg'),
+    buttons: [
+      { label: "I'll never catch up to So-Young.", link: "/onboard/day3_4",  marginBottom: 10, style: "gradient" },
+      { label: "Why did I let this define me?", link: "/onboard/day3_4",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day3_4: {
+    image: require('../../assets/images/onboard/stories/Day3/4.jpg'),
+    buttons: [
+      { label: "I'll destroy her too", link: "/onboard/day3_5",  marginBottom: 10, style: "gradient" },
+      { label: "I'll never join in on her games", link: "/onboard/day3_5",  marginBottom: 10, style: "gradient" },
+    ],
+  },
+  day3_5: {
+    image: require('../../assets/images/onboard/stories/Day3/5.jpg'),
+    buttons: [
+      { label: "I want to give this a shot.", link: "/(tabs)/chat",  marginBottom: 10, style: "gradient" },
+      { label: "I'll carve my own path.", link: "/(tabs)/chat",  marginBottom: 10, style: "gradient" },
     ],
   },
 };
@@ -74,5 +150,6 @@ export default interface Challenge {
 
 export const challenges: Challenge[] = [
   { id: 1, type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!", qns: 5},
-  { id: 2, type: "prog", title: "Drink Water", desc: "Drink {x} of water. Update me whenever you make progress, Good Luck!"}
+  { id: 2, type: "prog", title: "Drink Water", desc: "Drink {x} {y} of water. Update me whenever you make progress, Good Luck!"},
+  { id: 3, type: "prog", title: "Steps", desc: "Walk {x} steps. Your phone will automatically detect the number of steps you've walked."}
 ]

@@ -11,7 +11,7 @@ const height = Dimensions.get("window").height;
 const slides = [
   { id: "male_coach", background: require("../assets/images/onboard/Male_Coach.jpg") },
   { id: "female_coach", background: require("../assets/images/onboard/Female_Coach.jpg") },
-  { id: "custom_coach", background: require("../assets/images/onboard/Custom_Coach.jpeg") },
+  { id: "custom_coach", background: require("../assets/images/onboard/Custom_Coach.png") },
 ];
 
 interface CarouselComponentProps {

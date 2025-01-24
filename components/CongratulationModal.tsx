@@ -7,7 +7,7 @@ import Challenge, { challenges } from '../app/onboard/onboard_data';
 
 interface CongratulationModalProps {
   isVisible: boolean;
-  onClose: () => void;
+  onClose: (onboardDay: string) => void;
 }
 
 const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, onClose }) => {
@@ -15,9 +15,9 @@ const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, on
 
   const resetChallenge = async () => {
     setLoading(true);
-
+    const onboardDay = await getOnboardDay();
     try {
-      const onboardDay = await getOnboardDay();
+      
       const currentChallenge = challenges.find((ch) => ch.id === onboardDay + 1) || { id: 0, type: "none", title: "none", desc: "none", qns: 0};
       const challengeResponse = await recommendationResponse(currentChallenge.desc);
 
@@ -33,8 +33,8 @@ const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, on
     } catch (error) {
       console.error("Error resetting challenge or saving recommendation:", error);
     } finally {
-      setLoading(false); // Hide the loading indicator
-      onClose();
+      setLoading(false);
+      onClose(String(onboardDay + 1));
     }
   };
 

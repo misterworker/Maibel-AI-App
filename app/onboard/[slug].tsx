@@ -10,9 +10,7 @@ export default function onboardStoryPage() {
 
   let story;
 
-  if ((slug as string).startsWith("initOnboard")) {
-    story = initOnboardStoryData[slug as keyof typeof initOnboardStoryData];
-  }
+  story = initOnboardStoryData[slug as keyof typeof initOnboardStoryData];
 
   if (!story) {
     return (
