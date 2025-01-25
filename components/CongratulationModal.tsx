@@ -25,6 +25,10 @@ const CongratulationModal: React.FC<CongratulationModalProps> = ({ isVisible, on
         await setRecomendationVal(challengeResponse.recommendation)
         await setRecomendationUnit(challengeResponse.unit)
       }
+      else {
+        await setRecomendationVal("2")
+        await setRecomendationUnit("Liters")
+      }
 
       // Reset challenge state
       await setIsCompleted(false);

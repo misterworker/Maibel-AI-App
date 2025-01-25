@@ -16,7 +16,7 @@ export const getIsCompleted = async() => {
 
 export const getRecommendationVal = async() => {
   const recommendationVal = await getFromSecureStorage("recVal") as string
-  return recommendationVal
+  return +recommendationVal
 }
 
 export const getRecommendationUnit = async() => {
@@ -26,7 +26,10 @@ export const getRecommendationUnit = async() => {
 
 export const getChallengeProgress = async() => {
   const challengeProgress = await getFromSecureStorage("challengeProgress") as string
-  return challengeProgress
+  if (!challengeProgress || challengeProgress == "NaN"){
+    return 0.0
+  }
+  return +challengeProgress
 }
 
 //! User Information

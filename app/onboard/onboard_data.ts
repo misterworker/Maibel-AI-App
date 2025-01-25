@@ -1,5 +1,3 @@
-import { initiateOnboardingFlow } from "@/hooks/useOnboardingFlow";
-
 export const initOnboardStoryData = {
   day1_1: {
     image: require('../../assets/images/onboard/stories/Day1/1.jpg'),
@@ -111,12 +109,45 @@ export const initOnboardStoryData = {
   },
 };
 
+export const tango = [
+  { id: 1, message: (name: string) => `Hi, my name is ${name}.`, next: 2, time: 0 },
+  { id: 2, message: "You grandmother always said, `Small, disciplined acts shape the strongest legacies.` Let's see how your journey unfolds today.", next: 3, time: 3000 },
+  { id: 3, message: "To better serve you, I need to understand your lifestyle, preferences, and goals.", next: 4, time: 2500 },
+  { id: 4, message: "Don't worry - this will only take a few minutes.", next: 5, time: 1500 },
+  { id: 5, message: "Be honest about your habits. I'm here to help, not judge. Your secrets are safe with me.", next: 6, time: 2500 },
+  { id: 6, message: "TYPE 'READY' once you're ready to answer 5 short questions.", next: "wait_for_ready", time: 2000 },
+  { id: 7, message: "How many meals do you eat daily?", next: "wait" },
+  { id: 8, message: "How often do you snack in a day? Any specific cravings?", next: "wait" },
+  { id: 9, message: "Any foods you can't eat/don't like?", next: "wait" },
+  { id: 10, message: "How much water do you drink in a day?", next: "wait" },
+  { id: 11, message: "Lastly, share your greatest challenge to eating healthy.", next: "wait" },
+  { id: 12, message: "Thanks for sharing!", next: "finish"}
+];
+
+export const mango = [
+  { id: 1, message: "Good morning! You started this challenge strong. Let's get ready for day 2!", next: 2, time: 2000 },
+  { id: 2, message: "How much water do you think you drank yesterday? Be honest!", next: "wait", time: 2000 },
+  { id: 3, message: "Here's something wild: Even mild dehydration can cause headaches and low energy. Drinking enough water keeps you sharp and glowing - inside and out!", next: 4, time: 3500 },
+  { id: 4, message: "Your mission today:|||", next: "challenge", time: 1500 },
+  { id: 5, message: "Tips for success:\n1. Start your morning with a full glass of water\n2. Set reminders on your phone to sip every hour.\n3. Add some fun - try lemon, cucumber or even berries for flavor!", next: 6, time: 4000 },
+  { id: 6, message: "Let me know whenever you make progress, all the best!✨", next: "finish", time: 1500}
+];
+
+export const lingo = [
+  { id: 1, message: "Day 3! You're showing the kind of discipline your grandmother always admired. Let's see how today unfolds.", next: 2, time: 2500 },
+  { id: 2, message: "How was your energy level yesterday after staying hydrated?", next: "wait", time: 1500 },
+  { id: 3, message: "Did you know? Adding vegetables to your diet not only improves digestion but also supports better immunity and clearer skin?!", next: 4, time: 3500 },
+  { id: 4, message: "Today's challenge is to:|||Think colorful, nutrient-packed options like spinach, broccoli, or carrots. Will you rise to the occasion?", next: "challenge", time: 3500 },
+  { id: 5, message: "Tips for success:\n1. Add greens to your omelet.\n2. Roast some carrots with olive oil and thyme\n3. Blend spinach into your smoothie - it's suprisingly delicious!", next: 6, time: 4000 },
+  { id: 6, message: "This isn't just about today - it's about building habits for a lifetime. Let me know when you've added those veggies - I can't wait to cheer you on!", next: "finish", time: 3500}
+];
+
 // export const dialogueFlow = [
-//   { id: 1, message: (name: string) => `Hi, my name is ${name}.`, next: 2, time: 1500 },
-//   { id: 2, message: "To better serve you, I need to understand your lifestyle, preferences, and goals.", next: 3, time: 2000 },
-//   { id: 3, message: "Don't worry - this will only take a few minutes.", next: 4, time: 3000 },
-//   { id: 4, message: "Be honest about your habits. I'm here to help, not judge. Your secrets are safe with me.", next: 5, time: 3500 },
-//   { id: 5, message: "TYPE 'READY' once you're ready to answer 5 short questions.", next: "wait_for_ready", time: 3000 },
+//   { id: 1, message: (name: string) => `Hi, my name is ${name}.`, next: 2, time: 0 },
+//   { id: 2, message: "To better serve you, I need to understand your lifestyle, preferences, and goals.", next: 3, time: 0 },
+//   { id: 3, message: "Don't worry - this will only take a few minutes.", next: 4, time: 0 },
+//   { id: 4, message: "Be honest about your habits. I'm here to help, not judge. Your secrets are safe with me.", next: 5, time: 0 },
+//   { id: 5, message: "TYPE 'READY' once you're ready to answer 5 short questions.", next: "wait_for_ready", time: 0 },
 //   { id: 6, message: "How many meals do you eat daily?", next: "wait" },
 //   { id: 7, message: "How often do you snack in a day? Any specific cravings?", next: "wait" },
 //   { id: 8, message: "Any foods you can't eat/don't like?", next: "wait" },
@@ -125,31 +156,18 @@ export const initOnboardStoryData = {
 //   { id: 11, message: "Thanks for sharing!", next: "finish"}
 // ];
 
-export const dialogueFlow = [
-  { id: 1, message: (name: string) => `Hi, my name is ${name}.`, next: 2, time: 0 },
-  { id: 2, message: "To better serve you, I need to understand your lifestyle, preferences, and goals.", next: 3, time: 0 },
-  { id: 3, message: "Don't worry - this will only take a few minutes.", next: 4, time: 0 },
-  { id: 4, message: "Be honest about your habits. I'm here to help, not judge. Your secrets are safe with me.", next: 5, time: 0 },
-  { id: 5, message: "TYPE 'READY' once you're ready to answer 5 short questions.", next: "wait_for_ready", time: 0 },
-  { id: 6, message: "How many meals do you eat daily?", next: "wait" },
-  { id: 7, message: "How often do you snack in a day? Any specific cravings?", next: "wait" },
-  { id: 8, message: "Any foods you can't eat/don't like?", next: "wait" },
-  { id: 9, message: "How much water do you drink in a day?", next: "wait" },
-  { id: 10, message: "Lastly, share your greatest challenge to eating healthy.", next: "wait" },
-  { id: 11, message: "Thanks for sharing!", next: "finish"}
-];
-
 export default interface Challenge {
   id: number;
   type: string;
   title: string;
   desc: string;
   qns?: number;
-  progress?: number
+  progress?: number;
+  docId: string;
 }
 
 export const challenges: Challenge[] = [
-  { id: 1, type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!", qns: 5},
-  { id: 2, type: "prog", title: "Drink Water", desc: "Drink {x} {y} of water. Update me whenever you make progress, Good Luck!"},
-  { id: 3, type: "prog", title: "Steps", desc: "Walk {x} steps. Your phone will automatically detect the number of steps you've walked."}
+  { id: 1, type: "chat", title: "Onboarding Questions", desc: "Answer the bot's questions!", qns: 5, docId: "tango"},
+  { id: 2, type: "prog", title: "Drink Water", desc: "Drink {x} {y} of water!", docId: "mango"},
+  { id: 3, type: "prog", title: "Eat Your Veges", desc: "Eat at least {x} servings of vegetables.", docId: "lingo"}
 ]

@@ -3,12 +3,6 @@ import { getChallengeProgress, getIsCompleted, getUserInfo, getRecommendationUni
 import { setChallengeProgress, setIsCompleted } from './saveToSecureStorage';
 import { router, useFocusEffect } from "expo-router";
 
-const callbot_url = process.env.EXPO_PUBLIC_CALLBOT_URL || ""
-const validationbot_url = process.env.EXPO_PUBLIC_VALIDATIONBOT_URL || ""
-
-const markChallengeAsCompleted = async () => {
-  setIsCompleted(true);
-};
 
 export const botResponse = async (
   userMessage: string,
@@ -29,7 +23,6 @@ export const botResponse = async (
   };
   try {
     const [isCompleted, challengeProgress, recVal, recUnit] = await fetchStuff();
-
     const response = await fetch("https://callbot-fastapi-78306345447.asia-southeast1.run.app/chat", {
       method: 'POST',
       headers: {
@@ -41,7 +34,7 @@ export const botResponse = async (
         challenge: challenge,
         coachId: coachId,
         personalities: personality,
-        name: coachName,
+        coachName: coachName,
         gender: gender,
         background: background,
         isComplete: isCompleted,
@@ -94,7 +87,7 @@ export const validateResponse = async (
   reply: string,
 ) => {
   try {
-    const response = await fetch(validationbot_url, {
+    const response = await fetch("https://validation-bot-fastapi-78306345447.asia-southeast1.run.app/validate_response", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

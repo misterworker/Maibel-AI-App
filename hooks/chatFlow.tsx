@@ -1,17 +1,40 @@
 import { IMessage } from 'react-native-gifted-chat';
-import { dialogueFlow } from '../app/onboard/onboard_data';
+import {tango, mango, lingo} from '../app/onboard/onboard_data'
 
-export const initiateOnboardingFlow = async (coachName: string, 
+export const initiateChatFlow = async (coachName: string, 
     setMessages: React.Dispatch<React.SetStateAction<IMessage[]>>, 
     botAvatar: any, 
     onReadyCallback: () => void,
     onReplyCallback: (question: string) => Promise<string>,
     setTypingState: (isStreaming: boolean) => void,
-    setOnboardingComplete: React.Dispatch<React.SetStateAction<boolean>>,) => {
+    setChatComplete: React.Dispatch<React.SetStateAction<boolean>>,
+    challengeType: string,
+    challengeDocId: any,
+    challengeDesc?: any,
+    ) => {
   setTypingState(true)
+  let dialogueFlow:any = tango
+  switch (challengeDocId) {
+    case "tango":
+      dialogueFlow = tango;
+      break;
+    case "mango":
+      dialogueFlow = mango;
+      break;
+    case "lingo":
+      dialogueFlow = lingo;
+      break;
+    default:
+      dialogueFlow = tango;
+      break;
+  }
   for (const step of dialogueFlow) {
-    const messageText = typeof step.message === "function" ? step.message(coachName) : step.message;
     await new Promise((resolve) => setTimeout(resolve, step.time || 1000));
+    let messageText = typeof step.message === "function" ? step.message(coachName) : step.message;
+    if (step.next === "challenge") {
+      const [msg_0, msg_1] = step.message.split("|||");
+      messageText = `${msg_0} ${challengeDesc} ${msg_1}`
+    }
     setMessages((prevMessages) => [
       {
         _id: new Date().getTime(),
@@ -40,5 +63,7 @@ export const initiateOnboardingFlow = async (coachName: string,
     }
   }
   setTypingState(false);
-  setOnboardingComplete(true);
+  if (challengeType == "chat"){
+    setChatComplete(true);
+  }
 };

@@ -94,6 +94,7 @@ export default function ProfilePage() {
     desc: 'Get ready for a new challenge tomorrow.',
     progress: 1, //* TODO Turn into countdown
     type: 'default',
+    docId: 'tango'
   };
 
   // If there is no current challenge, use the default one

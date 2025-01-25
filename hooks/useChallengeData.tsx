@@ -29,7 +29,7 @@ export function useChallengeData() {
     const recUnit = await getRecommendationUnit();
 
     if (currentChallenge) {
-      const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recVal).replace('{y}', recUnit);
+      const updatedChallengeDesc = currentChallenge.desc.replace('{x}', String(recVal)).replace('{y}', recUnit);
       if (completed && challengeProgress >= 1) {
         setCompletedChallenges((prevChallenges) => {
           if (!prevChallenges.some(ch => ch.id === currentChallenge.id)) {
@@ -44,7 +44,8 @@ export function useChallengeData() {
           title: currentChallenge.title,
           progress: challengeProgress,
           desc: updatedChallengeDesc,
-          type: currentChallenge.type
+          type: currentChallenge.type,
+          docId: currentChallenge.docId
         });
       }
     }

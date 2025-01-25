@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Animated, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Animated, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { withTiming } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ChallengeNotificationProps {
   message: string;
@@ -50,6 +51,7 @@ const ChallengeNotification: React.FC<ChallengeNotificationProps> = ({ message, 
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
     <View style={styles.container}>
       <Animated.View
         style={[
@@ -68,11 +70,19 @@ const ChallengeNotification: React.FC<ChallengeNotificationProps> = ({ message, 
         </TouchableOpacity>
       </Animated.View>
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 999,
+  },
+  safeArea: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -91,6 +101,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: Platform.OS === "ios" ? 10:0,
   },
   touchableArea: {
     flex: 1,

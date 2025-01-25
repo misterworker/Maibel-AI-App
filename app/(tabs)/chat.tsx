@@ -21,8 +21,9 @@ export default function Chat() {
   const { theme } = useTheme();
   const currentTheme = themeStyles[theme];
 
-  const [coachBackground, setCoachBackground] = useState(null);
+  const [chatBackground, setChatBackground] = useState(require("../../assets/images/chat/chat_custom_coach.jpg"));
   const [coachName, setCoachName] = useState("");
+  const [coachBackground, setCoachBackground] = useState("");
   const [personality, setPersonality] = useState("");
   const [gender, setGender] = useState("");
   const [coachId, setCoachId] = useState("");
@@ -67,6 +68,7 @@ export default function Chat() {
     const coachName = coachDetails.coachName;
     const personalities = coachDetails.personalities;
     const gender = coachDetails.gender;
+    const coachBackground = coachDetails.coachBackground;
   
     const userID = await getUserID() || "123";
   
@@ -97,7 +99,8 @@ export default function Chat() {
     setGender(gender || "");
     setCoachId(coachId || "");
     setUserId(userID || "");
-    setCoachBackground(background);
+    setCoachBackground(coachBackground || "");
+    setChatBackground(background)
   };
   
   const setChallengeDetails = async () => {
@@ -112,7 +115,7 @@ export default function Chat() {
         setChallenge(currentChallenge as any);
         const recVal = await getRecommendationVal();
         const recUnit = await getRecommendationUnit();
-        const updatedChallengeDesc = currentChallenge.desc.replace('{x}', recVal).replace('{y}', recUnit);
+        const updatedChallengeDesc = currentChallenge.desc.replace('{x}', String(recVal)).replace('{y}', recUnit);
         setChallengeDesc(updatedChallengeDesc)
       }
     }
@@ -166,11 +169,11 @@ export default function Chat() {
     }, [])
   );
 
-  return coachBackground ? (
+  return chatBackground ? (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}>
+      <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
         <ImageBackground
-          source={coachBackground}
+          source={chatBackground}
           style={[styles.container, { paddingBottom: 0 }]}
           resizeMode="cover"
         >
