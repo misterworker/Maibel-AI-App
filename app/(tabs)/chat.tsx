@@ -31,7 +31,7 @@ export default function Chat() {
   const [onboardDay, setOnboardDay] = useState(0);
   const [botAvatar, setBotAvatar] = useState(require("../../assets/images/chat/custom_coach_avatar.jpg"));
 
-  const { messages, isStreaming, challenge, setChallenge, setChallengeDesc, handleSend, handleSendImage } = useChat(
+  const { messages, isStreaming, challenge, challengeDesc, setChallenge, setChallengeDesc, handleSend, handleSendImage } = useChat(
     userID,
     coachId,
     coachName, 
@@ -116,6 +116,7 @@ export default function Chat() {
         const recVal = await getRecommendationVal();
         const recUnit = await getRecommendationUnit();
         const updatedChallengeDesc = currentChallenge.desc.replace('{x}', String(recVal)).replace('{y}', recUnit);
+        console.log("Updated Challenge Description: ", updatedChallengeDesc)
         setChallengeDesc(updatedChallengeDesc)
       }
     }
@@ -183,7 +184,7 @@ export default function Chat() {
             messages={messages}
             onSend={(messages) => {
               if (!isStreaming) {
-                handleSend(messages, challenge);
+                handleSend(messages, challenge, challengeDesc);
               }
             }}
             user={{ _id: 1, name: "User" }}

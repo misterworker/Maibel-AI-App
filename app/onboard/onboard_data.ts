@@ -111,7 +111,7 @@ export const initOnboardStoryData = {
 
 export const tango = [
   { id: 1, message: (name: string) => `Hi, my name is ${name}.`, next: 2, time: 0 },
-  { id: 2, message: "You grandmother always said, `Small, disciplined acts shape the strongest legacies.` Let's see how your journey unfolds today.", next: 3, time: 3000 },
+  { id: 2, message: "Your grandmother always said, 'Small, disciplined acts shape the strongest legacies.' Let's see how your journey unfolds today.", next: 3, time: 3000 },
   { id: 3, message: "To better serve you, I need to understand your lifestyle, preferences, and goals.", next: 4, time: 2500 },
   { id: 4, message: "Don't worry - this will only take a few minutes.", next: 5, time: 1500 },
   { id: 5, message: "Be honest about your habits. I'm here to help, not judge. Your secrets are safe with me.", next: 6, time: 2500 },

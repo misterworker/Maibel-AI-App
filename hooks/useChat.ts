@@ -61,7 +61,7 @@ export const useChat = (
   
 
   const handleSend = useCallback(
-    (newMessages: IMessage[] = [], challenge: Challenge) => {
+    (newMessages: IMessage[] = [], challenge: Challenge, challengeDesc: string) => {
       const userMessage = newMessages[0];
       if (userMessage && userMessage.text) {
         setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
@@ -74,6 +74,7 @@ export const useChat = (
           }
           else{
             setIsStreaming(true);
+            console.log("useChat", challengeDesc)
             botResponse(userMessage.text, userId, coachId, personality, coachName, gender, coachBackgroundDesc, challengeDesc)
             .then((botMessage) => {
               const finalProg = botMessage.finalProg || "NA"
@@ -255,6 +256,7 @@ export const useChat = (
     messages,
     isStreaming,
     challenge,
+    challengeDesc,
     setChallenge,
     setChallengeDesc,
     handleSend,

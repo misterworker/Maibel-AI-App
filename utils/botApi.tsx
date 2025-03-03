@@ -21,6 +21,8 @@ export const botResponse = async (
     const recUnit = await getRecommendationUnit();
     return [isCompleted, challengeProgress, recVal, recUnit]
   };
+
+  console.log("Challenge Description", challenge)
   try {
     const [isCompleted, challengeProgress, recVal, recUnit] = await fetchStuff();
     const response = await fetch("https://callbot-fastapi-78306345447.asia-southeast1.run.app/chat", {
